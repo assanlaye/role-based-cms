@@ -1,11 +1,11 @@
 const User = require('../models/User');
 
-// Get all users (SuperAdmin only)
+// Get all users
 const getAllUsers = async (req, res) => {
   try {
     const users = await User.find()
       .populate('role')
-      .select('-password');
+      .select('-password -refreshToken');
 
     res.status(200).json(users);
   } catch (error) {
@@ -18,7 +18,7 @@ const getUserById = async (req, res) => {
   try {
     const user = await User.findById(req.params.id)
       .populate('role')
-      .select('-password');
+      .select('-password -refreshToken');
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -30,7 +30,7 @@ const getUserById = async (req, res) => {
   }
 };
 
-// Update user role (SuperAdmin only)
+// Update user role
 const updateUserRole = async (req, res) => {
   try {
     const { roleId } = req.body;
@@ -59,7 +59,7 @@ const updateUserRole = async (req, res) => {
   }
 };
 
-// Delete user (SuperAdmin only)
+// Delete user
 const deleteUser = async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id);

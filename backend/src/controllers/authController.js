@@ -1,6 +1,6 @@
 const User = require('../models/User');
 const Role = require('../models/Role');
-const tokenService = require('../services/tokenService');
+const { generateAccessToken, generateRefreshToken, verifyRefreshToken } = require('../config/jwt');
 
 // Register new user
 const register = async (req, res) => {
@@ -25,22 +25,21 @@ const register = async (req, res) => {
       userRole = await Role.findOne({ name: 'Viewer' });
     }
 
+    // Generate tokens
+    const accessToken = generateAccessToken();
+    const refreshToken = generateRefreshToken();
+
     // Create new user
     const user = new User({
       fullName,
       email,
       password,
       role: userRole._id,
-      profilePhoto
+      profilePhoto,
+      refreshToken
     });
 
     await user.save();
-
-    // Generate tokens
-    const accessToken = tokenService.generateAccessToken(user._id);
-    const refreshToken = await tokenService.generateRefreshToken(user._id);
-
-    // Populate role before sending response
     await user.populate('role');
 
     res.status(201).json({
@@ -85,8 +84,12 @@ const login = async (req, res) => {
     }
 
     // Generate tokens
-    const accessToken = tokenService.generateAccessToken(user._id);
-    const refreshToken = await tokenService.generateRefreshToken(user._id);
+    const accessToken = generateAccessToken(user._id);
+    const refreshToken = generateRefreshToken(user._id);
+
+    // Save refresh token to user
+    user.refreshToken = refreshToken;
+    await user.save();
 
     res.status(200).json({
       message: 'Login successful',
@@ -115,10 +118,17 @@ const refreshToken = async (req, res) => {
     }
 
     // Verify refresh token
-    const userId = await tokenService.verifyRefreshToken(refreshToken);
+    const decoded = verifyRefreshToken(refreshToken);
+
+    // Find user with this refresh token
+    const user = await User.findOne({ _id: decoded.id, refreshToken });
+
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid refresh token' });
+    }
 
     // Generate new access token
-    const accessToken = tokenService.generateAccessToken(userId);
+    const accessToken = generateAccessToken(user._id);
 
     res.status(200).json({ accessToken });
   } catch (error) {
@@ -132,7 +142,8 @@ const logout = async (req, res) => {
     const { refreshToken } = req.body;
 
     if (refreshToken) {
-      await tokenService.deleteRefreshToken(refreshToken);
+      // Remove refresh token from user
+      await User.updateOne({ refreshToken }, { refreshToken: null });
     }
 
     res.status(200).json({ message: 'Logout successful' });
@@ -144,7 +155,7 @@ const logout = async (req, res) => {
 // Get current user profile
 const getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).populate('role').select('-password');
+    const user = await User.findById(req.user._id).populate('role').select('-password -refreshToken');
     res.status(200).json(user);
   } catch (error) {
     res.status(500).json({ message: error.message });

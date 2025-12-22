@@ -5,7 +5,6 @@ const createArticle = async (req, res) => {
   try {
     const { title, body } = req.body;
 
-    // Create article
     const article = new Article({
       title,
       body,
@@ -25,7 +24,7 @@ const createArticle = async (req, res) => {
   }
 };
 
-// Get all articles (viewers see only published)
+// Get all articles
 const getAllArticles = async (req, res) => {
   try {
     let filter = {};
@@ -109,7 +108,7 @@ const deleteArticle = async (req, res) => {
   }
 };
 
-// Publish/Unpublish article (Manager and SuperAdmin only)
+// Publish/Unpublish article
 const togglePublish = async (req, res) => {
   try {
     const article = await Article.findById(req.params.id);

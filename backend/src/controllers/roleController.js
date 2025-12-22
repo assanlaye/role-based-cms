@@ -102,7 +102,7 @@ const deleteRole = async (req, res) => {
   }
 };
 
-// Get access matrix (all roles with their permissions)
+// Get access matrix
 const getAccessMatrix = async (req, res) => {
   try {
     const roles = await Role.find().select('name permissions');
