@@ -23,6 +23,8 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Role',
     required: true
+    // Note: All new users get 'Viewer' role by default during registration
+    // SuperAdmin can upgrade user roles via /api/users/:id/role endpoint
   },
   profilePhoto: {
     type: String,

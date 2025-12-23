@@ -5,7 +5,7 @@ const { generateAccessToken, generateRefreshToken, verifyRefreshToken } = requir
 // Register new user
 const register = async (req, res) => {
   try {
-    const { fullName, email, password, role, profilePhoto } = req.body;
+    const { fullName, email, password, profilePhoto } = req.body;
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -13,16 +13,11 @@ const register = async (req, res) => {
       return res.status(400).json({ message: 'User already exists with this email' });
     }
 
-    // Find role by name
-    let userRole;
-    if (role) {
-      userRole = await Role.findOne({ name: role });
-      if (!userRole) {
-        return res.status(400).json({ message: 'Invalid role' });
-      }
-    } else {
-      // Default to Viewer role if not specified
-      userRole = await Role.findOne({ name: 'Viewer' });
+    // Always assign Viewer role to new registrations for security
+    const userRole = await Role.findOne({ name: 'Viewer' });
+    
+    if (!userRole) {
+      return res.status(500).json({ message: 'Default role not found. Please seed the database.' });
     }
 
     // Create new user
