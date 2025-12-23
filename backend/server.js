@@ -1,14 +1,13 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const connectDB = require('./config/database');
-const errorHandler = require('./src/middleware/errorHandler');
+const connectDB = require('./src/config/database');
 
 // Import routes
 const authRoutes = require('./src/routes/authRoutes');
 const userRoutes = require('./src/routes/userRoutes');
 const roleRoutes = require('./src/routes/roleRoutes');
-const articleRoutes = require('./src/routes/articleRoutes');
+const articlesRoutes = require('./src/routes/articlesRoutes');
 
 // Initialize express app
 const app = express();
@@ -26,13 +25,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Serve uploaded files statically
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static('src/uploads'));
 
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/roles', roleRoutes);
-app.use('/api/articles', articleRoutes);
+app.use('/api/articles', articlesRoutes);
 
 // Welcome route
 app.get('/', (req, res) => {
@@ -48,11 +47,9 @@ app.get('/', (req, res) => {
   });
 });
 
-// Error handling middleware (must be last)
-app.use(errorHandler);
-
 // Start server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`MongoDB: Connected`);
 });

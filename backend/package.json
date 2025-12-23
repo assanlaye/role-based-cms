@@ -7,7 +7,13 @@
     "dev": "nodemon server.js",
     "seed": "node src/utils/seedRoles.js"
   },
-  "keywords": ["cms", "mean", "mongodb", "express", "jwt"],
+  "keywords": [
+    "cms",
+    "mean",
+    "mongodb",
+    "express",
+    "jwt"
+  ],
   "author": "",
   "license": "ISC",
   "type": "commonjs",

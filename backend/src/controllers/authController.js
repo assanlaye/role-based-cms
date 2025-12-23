@@ -13,10 +13,10 @@ const register = async (req, res) => {
       return res.status(400).json({ message: 'User already exists with this email' });
     }
 
-    // Find role by name or ID
+    // Find role by name
     let userRole;
     if (role) {
-      userRole = await Role.findOne({ $or: [{ name: role }, { _id: role }] });
+      userRole = await Role.findOne({ name: role });
       if (!userRole) {
         return res.status(400).json({ message: 'Invalid role' });
       }
@@ -25,20 +25,23 @@ const register = async (req, res) => {
       userRole = await Role.findOne({ name: 'Viewer' });
     }
 
-    // Generate tokens
-    const accessToken = generateAccessToken();
-    const refreshToken = generateRefreshToken();
-
     // Create new user
     const user = new User({
       fullName,
       email,
       password,
       role: userRole._id,
-      profilePhoto,
-      refreshToken
+      profilePhoto
     });
 
+    await user.save();
+
+    // Generate tokens
+    const accessToken = generateAccessToken(user._id);
+    const refreshToken = generateRefreshToken(user._id);
+
+    // Save refresh token to user
+    user.refreshToken = refreshToken;
     await user.save();
     await user.populate('role');
 
