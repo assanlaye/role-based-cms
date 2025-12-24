@@ -8,7 +8,7 @@ const createArticle = async (req, res) => {
     const article = new Article({
       title,
       body,
-      image: req.file ? `/uploads/${req.file.filename}` : null,
+      image: req.file ? req.file.path : null, // Cloudinary returns 'path' with full URL
       author: req.user._id
     });
 
@@ -79,7 +79,7 @@ const updateArticle = async (req, res) => {
     // Update fields
     if (title) article.title = title;
     if (body) article.body = body;
-    if (req.file) article.image = `/uploads/${req.file.filename}`;
+    if (req.file) article.image = req.file.path; // Cloudinary URL
 
     await article.save();
     await article.populate('author', 'fullName email');
