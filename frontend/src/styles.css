@@ -1,1 +1,23 @@
 /* You can add global styles to this file, and also import other style files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Sidebar content slide animation */
+@keyframes slideRight {
+  from {
+    margin-left: 16rem; /* ml-64 */
+  }
+  to {
+    margin-left: 0;
+  }
+}
+
+.slide-right {
+  animation: slideRight 0.3s ease-out;
+}
+
+/* Prevent animation when sidebar is opening */
+.ml-64 {
+  animation: none !important;
+}

@@ -1,0 +1,17 @@
+/* Navbar positioned at the very top with no gaps */
+:host {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin: 0;
+  height: 4rem; /* 64px */
+  z-index: 20;
+}
+
+/* Remove any default margins/padding from the navbar content */
+:host > div {
+  margin: 0;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}

@@ -26,7 +26,7 @@ const register = async (req, res) => {
       email,
       password,
       role: userRole._id,
-      profilePhoto
+      profilePhoto: req.file?.path || profilePhoto
     });
 
     await user.save();

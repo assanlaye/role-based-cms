@@ -1,0 +1,206 @@
+<div class="bg-gray-50 min-h-screen">
+  <app-navbar></app-navbar>
+  <app-sidebar></app-sidebar>
+
+  <div [ngClass]="sidebarOpen ? 'ml-64' : 'ml-0 slide-right'" class="flex flex-col min-h-screen">
+    <main class="flex-1 px-12 py-6 overflow-y-auto pt-28">
+      <div class="mb-6">
+        <h1 class="text-3xl font-bold text-gray-900">Manage Roles & Permissions</h1>
+      </div>
+
+      <!-- Create New Role Section -->
+      <div class="bg-white rounded-lg shadow p-6 mb-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Create New Role</h2>
+        
+        <div *ngIf="!showNewRoleForm" class="flex items-center gap-4">
+          <input type="text" 
+                 [(ngModel)]="newRoleName"
+                 placeholder="e.g., Editor"
+                 class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#101828] focus:border-transparent">
+          <button (click)="openNewRoleForm()" 
+                  class="px-6 py-2 bg-[#101828] hover:bg-[#1F2937] text-white rounded-lg transition-colors">
+            Add Role
+          </button>
+        </div>
+
+        <div *ngIf="showNewRoleForm" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">New Role Name</label>
+            <input type="text" 
+                   [(ngModel)]="newRoleName"
+                   placeholder="e.g., Editor"
+                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#101828] focus:border-transparent">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-3">Permissions</label>
+            <div class="space-y-2">
+              <label class="flex items-center">
+                <input type="checkbox" 
+                       [(ngModel)]="newRolePermissions.view"
+                       class="w-4 h-4 text-[#101828] border-gray-300 rounded focus:ring-[#101828]">
+                <span class="ml-2 text-sm text-gray-700">View</span>
+              </label>
+              <label class="flex items-center">
+                <input type="checkbox" 
+                       [(ngModel)]="newRolePermissions.create"
+                       class="w-4 h-4 text-[#101828] border-gray-300 rounded focus:ring-[#101828]">
+                <span class="ml-2 text-sm text-gray-700">Create</span>
+              </label>
+              <label class="flex items-center">
+                <input type="checkbox" 
+                       [(ngModel)]="newRolePermissions.edit"
+                       class="w-4 h-4 text-[#101828] border-gray-300 rounded focus:ring-[#101828]">
+                <span class="ml-2 text-sm text-gray-700">Edit</span>
+              </label>
+              <label class="flex items-center">
+                <input type="checkbox" 
+                       [(ngModel)]="newRolePermissions.delete"
+                       class="w-4 h-4 text-[#101828] border-gray-300 rounded focus:ring-[#101828]">
+                <span class="ml-2 text-sm text-gray-700">Delete</span>
+              </label>
+              <label class="flex items-center">
+                <input type="checkbox" 
+                       [(ngModel)]="newRolePermissions.publish"
+                       class="w-4 h-4 text-[#101828] border-gray-300 rounded focus:ring-[#101828]">
+                <span class="ml-2 text-sm text-gray-700">Publish</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="flex gap-2">
+            <button (click)="cancelNewRole()" 
+                    class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+              Cancel
+            </button>
+            <button (click)="addRole()" 
+                    [disabled]="saving"
+                    class="px-4 py-2 bg-[#101828] hover:bg-[#1F2937] text-white rounded-lg transition-colors disabled:opacity-50">
+              {{ saving ? 'Adding...' : 'Add' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Roles and Permissions Table -->
+      <div class="bg-white rounded-lg shadow overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ROLE</th>
+              <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">VIEW</th>
+              <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">CREATE</th>
+              <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">EDIT</th>
+              <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">DELETE</th>
+              <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">PUBLISH</th>
+              <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr *ngFor="let role of roles" class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center justify-between">
+                  <span class="text-sm font-medium text-gray-900">{{ role.name }}</span>
+                  <button *ngIf="role.isCustom && hasPermission('delete')" 
+                          (click)="deleteRole(role)"
+                          class="ml-2 text-red-600 hover:text-red-800">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                  </button>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-center">
+                <div *ngIf="editingRoleId === role._id" class="flex justify-center">
+                  <input type="checkbox" 
+                         [(ngModel)]="editingPermissions.view"
+                         class="w-4 h-4 text-[#101828] border-gray-300 rounded focus:ring-[#101828]">
+                </div>
+                <div *ngIf="editingRoleId !== role._id" class="flex justify-center">
+                  <svg *ngIf="role.permissions.view" class="w-5 h-5 text-[#4F46E5]" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                  </svg>
+                  <div *ngIf="!role.permissions.view" class="w-5 h-5 border-2 border-gray-300 rounded"></div>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-center">
+                <div *ngIf="editingRoleId === role._id" class="flex justify-center">
+                  <input type="checkbox" 
+                         [(ngModel)]="editingPermissions.create"
+                         class="w-4 h-4 text-[#101828] border-gray-300 rounded focus:ring-[#101828]">
+                </div>
+                <div *ngIf="editingRoleId !== role._id" class="flex justify-center">
+                  <svg *ngIf="role.permissions.create" class="w-5 h-5 text-[#4F46E5]" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                  </svg>
+                  <div *ngIf="!role.permissions.create" class="w-5 h-5 border-2 border-gray-300 rounded"></div>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-center">
+                <div *ngIf="editingRoleId === role._id" class="flex justify-center">
+                  <input type="checkbox" 
+                         [(ngModel)]="editingPermissions.edit"
+                         class="w-4 h-4 text-[#101828] border-gray-300 rounded focus:ring-[#101828]">
+                </div>
+                <div *ngIf="editingRoleId !== role._id" class="flex justify-center">
+                  <svg *ngIf="role.permissions.edit" class="w-5 h-5 text-[#4F46E5]" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                  </svg>
+                  <div *ngIf="!role.permissions.edit" class="w-5 h-5 border-2 border-gray-300 rounded"></div>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-center">
+                <div *ngIf="editingRoleId === role._id" class="flex justify-center">
+                  <input type="checkbox" 
+                         [(ngModel)]="editingPermissions.delete"
+                         class="w-4 h-4 text-[#101828] border-gray-300 rounded focus:ring-[#101828]">
+                </div>
+                <div *ngIf="editingRoleId !== role._id" class="flex justify-center">
+                  <svg *ngIf="role.permissions.delete" class="w-5 h-5 text-[#4F46E5]" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                  </svg>
+                  <div *ngIf="!role.permissions.delete" class="w-5 h-5 border-2 border-gray-300 rounded"></div>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-center">
+                <div *ngIf="editingRoleId === role._id" class="flex justify-center">
+                  <input type="checkbox" 
+                         [(ngModel)]="editingPermissions.publish"
+                         class="w-4 h-4 text-[#101828] border-gray-300 rounded focus:ring-[#101828]">
+                </div>
+                <div *ngIf="editingRoleId !== role._id" class="flex justify-center">
+                  <svg *ngIf="role.permissions.publish" class="w-5 h-5 text-[#4F46E5]" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                  </svg>
+                  <div *ngIf="!role.permissions.publish" class="w-5 h-5 border-2 border-gray-300 rounded"></div>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-center">
+                <div *ngIf="editingRoleId === role._id" class="flex justify-center gap-2">
+                  <button (click)="cancelEditRole()" 
+                          class="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50">
+                    Cancel
+                  </button>
+                  <button (click)="saveRoleChanges(role)" 
+                          [disabled]="saving"
+                          class="px-3 py-1 text-sm bg-[#101828] hover:bg-[#1F2937] text-white rounded disabled:opacity-50">
+                    Save
+                  </button>
+                </div>
+                <button *ngIf="editingRoleId !== role._id && hasPermission('edit')"
+                        (click)="startEditRole(role)"
+                        class="px-3 py-1 text-sm border border-[#101828] text-[#101828] hover:bg-[#101828] hover:text-white rounded-md transition-colors">
+                  Edit
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div *ngIf="loading" class="text-center py-12">
+          <p class="text-gray-600">Loading roles...</p>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>

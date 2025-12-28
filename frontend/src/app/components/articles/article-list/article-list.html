@@ -1,0 +1,217 @@
+<div class="bg-gray-50 min-h-screen">
+  <app-navbar></app-navbar>
+  <app-sidebar></app-sidebar>
+
+  <div [ngClass]="sidebarOpen ? 'ml-64' : 'ml-0 slide-right'" class="flex flex-col min-h-screen">
+    <main class="flex-1 px-12 py-6 overflow-y-auto pt-28">
+      <!-- Article View -->
+      <div *ngIf="selectedArticle" class="p-8">
+        <button (click)="closeArticleView()" 
+                class="mb-4 text-gray-600 hover:text-gray-900 flex items-center">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          Back to Articles
+        </button>
+        
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">{{ selectedArticle.title }}</h1>
+        <p class="text-gray-600 mb-6">
+          By {{ selectedArticle.author.fullName }} • {{ formatDate(selectedArticle.createdAt) }}
+        </p>
+        
+        <img *ngIf="selectedArticle.image" 
+             [src]="selectedArticle.image" 
+             [alt]="selectedArticle.title"
+             class="w-full h-96 object-cover rounded-lg mb-6">
+        
+        <div class="prose max-w-none whitespace-pre-wrap">{{ selectedArticle.body }}</div>
+      </div>
+
+      <!-- Articles List -->
+      <div *ngIf="!selectedArticle">
+        <div class="mb-6 flex items-center justify-between">
+          <h1 class="text-3xl font-bold text-gray-900">Articles</h1>
+          <button *ngIf="hasPermission('create')" 
+                  (click)="createArticle()"
+                  class="bg-[#101828] hover:bg-[#1F2937] text-white px-4 py-2 rounded-lg transition-colors">
+            Create Article
+          </button>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="bg-white rounded-lg shadow mb-6">
+          <div class="border-b border-gray-200">
+            <nav class="flex -mb-px">
+              <button (click)="onTabChange('all')" 
+                      [class.border-[#101828]]="currentTab === 'all'"
+                      [class.text-[#101828]]="currentTab === 'all'"
+                      class="px-6 py-4 border-b-2 font-medium text-sm transition-colors">
+                All Articles
+              </button>
+              <button (click)="onTabChange('published')" 
+                      [class.border-[#101828]]="currentTab === 'published'"
+                      [class.text-[#101828]]="currentTab === 'published'"
+                      class="px-6 py-4 border-b-2 font-medium text-sm transition-colors">
+                Published
+              </button>
+              <button (click)="onTabChange('draft')" 
+                      [class.border-[#101828]]="currentTab === 'draft'"
+                      [class.text-[#101828]]="currentTab === 'draft'"
+                      class="px-6 py-4 border-b-2 font-medium text-sm transition-colors">
+                Draft
+              </button>
+              <button (click)="onTabChange('trash')" 
+                      [class.border-[#101828]]="currentTab === 'trash'"
+                      [class.text-[#101828]]="currentTab === 'trash'"
+                      class="px-6 py-4 border-b-2 font-medium text-sm transition-colors">
+                Trash
+              </button>
+            </nav>
+          </div>
+
+          <!-- Filters -->
+          <div class="p-4 border-b border-gray-200 flex flex-wrap gap-4">
+            <input type="text" 
+                   [(ngModel)]="searchQuery" 
+                   (ngModelChange)="onSearchChange()"
+                   placeholder="Search articles..."
+                   class="flex-1 min-w-[200px] px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#101828] focus:border-transparent">
+            
+            <select [(ngModel)]="selectedAuthor" 
+                    (ngModelChange)="onAuthorChange()"
+                    class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#101828] focus:border-transparent">
+              <option value="">All Authors</option>
+              <option *ngFor="let author of authors" [value]="author">{{ author }}</option>
+            </select>
+            
+            <input type="date" 
+                   [(ngModel)]="selectedDate" 
+                   (ngModelChange)="onDateChange()"
+                   class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#101828] focus:border-transparent">
+          </div>
+        </div>
+
+        <!-- Loading State -->
+        <div *ngIf="loading" class="text-center py-12">
+          <p class="text-gray-600">Loading articles...</p>
+        </div>
+
+        <!-- Grid View for All Articles -->
+        <div *ngIf="!loading && currentTab === 'all'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div *ngFor="let article of filteredArticles" 
+               (click)="viewArticle(article)"
+               class="bg-white rounded-lg shadow hover:shadow-lg transition-shadow cursor-pointer">
+            <img *ngIf="article.image" 
+                 [src]="article.image" 
+                 [alt]="article.title"
+                 class="w-full h-48 object-cover rounded-t-lg">
+            <div class="p-4 pb-6">
+              <div class="flex items-center justify-between mb-2">
+                <span [class.bg-green-600]="article.isPublished"
+                      [class.text-white]="article.isPublished"
+                      [class.bg-gray-200]="!article.isPublished"
+                      [class.text-gray-700]="!article.isPublished"
+                      class="px-2 py-1 rounded text-xs font-medium">
+                  {{ article.isPublished ? 'PUBLISHED' : 'DRAFT' }}
+                </span>
+              </div>
+              <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ article.title }}</h3>
+              <p class="text-sm text-gray-600 mb-2">
+                By {{ article.author.fullName }} • {{ formatDate(article.createdAt) }}
+              </p>
+              <p class="text-sm text-gray-500 line-clamp-2">{{ article.body.substring(0, 100) }}...</p>
+              <div class="mt-6 flex flex-col gap-2" (click)="$event.stopPropagation()">
+                <button *ngIf="hasPermission('publish')"
+                        (click)="togglePublish(article)"
+                        class="text-sm px-3 py-2 border border-gray-300 rounded hover:bg-gray-50 flex items-center justify-center gap-1 w-full">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                  {{ article.isPublished ? 'Unpublish' : 'Publish' }}
+                </button>
+                <div class="flex gap-2">
+                  <button *ngIf="hasPermission('edit')"
+                          (click)="editArticle(article)"
+                          class="text-sm px-3 py-2 border border-gray-300 rounded hover:bg-gray-50 flex items-center gap-1 flex-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                    Edit
+                  </button>
+                  <button *ngIf="hasPermission('delete')"
+                          (click)="deleteArticle(article)"
+                          class="text-sm px-3 py-2 border border-gray-300 rounded hover:bg-gray-50 text-red-600 hover:text-red-800 flex items-center gap-1 flex-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- List View for Published/Draft/Trash -->
+        <div *ngIf="!loading && currentTab !== 'all'" class="bg-white rounded-lg shadow">
+          <div *ngFor="let article of filteredArticles" class="border-b border-gray-200 last:border-b-0 p-4 hover:bg-gray-50">
+            <div class="flex items-center gap-4">
+              <img *ngIf="article.image" 
+                   [src]="article.image" 
+                   [alt]="article.title"
+                   class="w-20 h-20 object-cover rounded cursor-pointer"
+                   (click)="viewArticle(article)">
+              <div class="flex-1">
+                <h3 (click)="viewArticle(article)" 
+                    class="text-lg font-semibold text-gray-900 cursor-pointer hover:text-[#101828]">
+                  {{ article.title }}
+                </h3>
+                <p class="text-sm text-gray-600 mt-1">
+                  By {{ article.author.fullName }} • {{ formatDate(article.createdAt) }}
+                </p>
+              </div>
+              <div class="flex items-center gap-2">
+                <span [class.bg-green-600]="article.isPublished" 
+                      [class.text-white]="article.isPublished"
+                      [class.bg-gray-200]="!article.isPublished"
+                      [class.text-gray-700]="!article.isPublished"
+                      class="px-3 py-1 rounded text-sm font-medium">
+                  {{ article.isPublished ? 'PUBLISHED' : 'DRAFT' }}
+                </span>
+                <button *ngIf="hasPermission('publish')" 
+                        (click)="togglePublish(article)"
+                        [title]="article.isPublished ? 'Unpublish' : 'Publish'"
+                        class="p-2 hover:bg-gray-100 rounded">
+                  <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                </button>
+                <button *ngIf="hasPermission('edit')" 
+                        (click)="editArticle(article)"
+                        title="Edit"
+                        class="p-2 hover:bg-gray-100 rounded">
+                  <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                  </svg>
+                </button>
+                <button *ngIf="hasPermission('delete')" 
+                        (click)="deleteArticle(article)"
+                        title="Delete"
+                        class="p-2 hover:bg-gray-100 rounded">
+                  <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="!loading && filteredArticles.length === 0" class="text-center py-12 bg-white rounded-lg shadow">
+          <p class="text-gray-600">No articles found.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>

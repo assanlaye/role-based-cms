@@ -1,0 +1,28 @@
+<div class="bg-white py-4 flex items-center justify-between relative z-20" style="border-bottom: 1px solid #101828;">
+  <div class="flex items-center space-x-3">
+    <button (click)="toggleSidebar()" class="p-2 rounded-lg hover:bg-gray-100 transition-colors">
+      <svg *ngIf="sidebarOpen" class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+      </svg>
+      <svg *ngIf="!sidebarOpen" class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16"></path>
+      </svg>
+    </button>
+    <h1 class="text-xl font-bold text-gray-900">CMS</h1>
+  </div>
+  <div class="flex items-center space-x-3">
+    <div *ngIf="currentUser?.profilePhoto" class="w-10 h-10 rounded-full overflow-hidden">
+      <img [src]="currentUser.profilePhoto"
+           [alt]="currentUser.fullName"
+           class="w-full h-full object-cover">
+    </div>
+    <div *ngIf="!currentUser?.profilePhoto"
+         class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-700 font-semibold text-sm">
+      {{ getInitials(currentUser?.fullName || 'User') }}
+    </div>
+    <div>
+      <p class="text-sm font-medium text-gray-900">{{ currentUser?.fullName || 'User' }}</p>
+      <p class="text-xs text-gray-500">{{ currentUser?.role?.name || 'Role' }}</p>
+    </div>
+  </div>
+</div>

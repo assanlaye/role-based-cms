@@ -1,0 +1,20 @@
+/* Sidebar positioned from top with navbar overlaying it */
+:host {
+  position: fixed;
+  left: 0;
+  top: 0; /* Start from very top */
+  height: 100vh; /* Full viewport height */
+  width: 16rem; /* 256px width */
+  z-index: 5; /* Lower than navbar z-index 20 */
+  margin: 0;
+  padding: 0;
+}
+
+/* Ensure smooth transitions are removed */
+a {
+  transition: none !important;
+}
+
+button {
+  transition: none !important;
+}

@@ -1,0 +1,155 @@
+<div class="bg-gray-50 min-h-screen">
+  <app-navbar></app-navbar>
+  <app-sidebar></app-sidebar>
+
+  <div [ngClass]="sidebarOpen ? 'ml-64' : 'ml-0 slide-right'" class="flex flex-col min-h-screen">
+    <main class="flex-1 px-12 py-6 overflow-y-auto pt-28">
+      <!-- Admin Dashboard for non-Viewer roles -->
+      <div *ngIf="currentUser?.role?.name !== 'Viewer'">
+        <div class="mb-6">
+          <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+              <div class="p-3 bg-[#4F46E5] rounded-full">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+              </div>
+              <div class="ml-4">
+                <p class="text-sm font-medium text-gray-600">TOTAL ARTICLES</p>
+                <p class="text-2xl font-bold text-gray-900">{{ totalArticles }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+              <div class="p-3 bg-[#4F46E5] rounded-full">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+              </div>
+              <div class="ml-4">
+                <p class="text-sm font-medium text-gray-600">PUBLISHED ARTICLES</p>
+                <p class="text-2xl font-bold text-gray-900">{{ publishedArticlesCount }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+              <div class="p-3 bg-[#4F46E5] rounded-full">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                </svg>
+              </div>
+              <div class="ml-4">
+                <p class="text-sm font-medium text-gray-600">TOTAL USERS</p>
+                <p class="text-2xl font-bold text-gray-900">{{ totalUsers }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Welcome Message -->
+        <div class="bg-white rounded-lg shadow p-6">
+          <h2 class="text-xl font-bold text-gray-900 mb-2">Welcome, {{ currentUser?.fullName || 'User' }}!</h2>
+
+          <!-- SuperAdmin Message -->
+          <div *ngIf="currentUser?.role?.name === 'SuperAdmin'">
+            <p class="text-gray-600">
+              You are logged in as a <strong>SuperAdmin</strong>.
+            </p>
+            <p class="text-gray-600 mt-2">
+              As a SuperAdmin, you have full access to all features of the system. You can create, edit, delete, and publish articles. You also have the ability to manage users, assign roles, and create custom roles with specific permissions. Use the sidebar to navigate through the application.
+            </p>
+          </div>
+
+          <!-- Manager Message -->
+          <div *ngIf="currentUser?.role?.name === 'Manager'">
+            <p class="text-gray-600">
+              You are logged in as a <strong>Manager</strong>.
+            </p>
+            <p class="text-gray-600 mt-2">
+              As a Manager, you can create, edit, and publish articles to make them visible to all users. You have access to manage content but cannot delete articles or modify user roles. Use the sidebar to navigate through the application and manage your content.
+            </p>
+          </div>
+
+          <!-- Contributor Message -->
+          <div *ngIf="currentUser?.role?.name === 'Contributor'">
+            <p class="text-gray-600">
+              You are logged in as a <strong>Contributor</strong>.
+            </p>
+            <p class="text-gray-600 mt-2">
+              As a Contributor, you can create new articles and edit existing ones. However, you cannot publish articles - they must be reviewed and published by a Manager or SuperAdmin. Use the sidebar to navigate and create content for the platform.
+            </p>
+          </div>
+
+          <!-- Viewer Message -->
+          <div *ngIf="currentUser?.role?.name === 'Viewer'">
+            <p class="text-gray-600">
+              You are logged in as a <strong>Viewer</strong>.
+            </p>
+            <p class="text-gray-600 mt-2">
+              As a Viewer, you can browse and read all published articles on the platform. You have read-only access and cannot create, edit, or manage content. Use the sidebar to explore the available articles.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Viewer Interface -->
+      <div *ngIf="currentUser?.role?.name === 'Viewer'">
+        <!-- Articles Horizontal Layout -->
+        <div class="space-y-8">
+          <div *ngFor="let article of publishedArticles; let i = index" class="flex gap-8 pb-8 border-b border-gray-200 last:border-b-0">
+            <!-- Article Number -->
+            <div class="flex-shrink-0 text-4xl font-bold text-gray-300 w-12 text-center">
+              {{ i + 1 }}
+            </div>
+
+            <!-- Article Content -->
+            <div class="flex-1">
+              <div class="flex items-start justify-between">
+                <div class="flex-1">
+                  <h3 (click)="viewArticle(article)" class="text-xl font-bold text-gray-900 mb-2 hover:text-[#101828] cursor-pointer line-clamp-2">{{ article.title }}</h3>
+                  <p class="text-gray-600 mb-3 line-clamp-3">{{ article.body?.substring(0, 200) }}...</p>
+                  <div class="flex items-center text-sm text-gray-500">
+                    <span class="font-medium">{{ article.author?.fullName || 'Unknown' }}</span>
+                    <span class="mx-2">·</span>
+                    <span>{{ formatDate(article.createdAt) }}</span>
+                    <span class="mx-2">·</span>
+                    <span>5 min read</span>
+                  </div>
+                </div>
+
+                <!-- Article Image -->
+                <div class="flex-shrink-0 ml-6">
+                  <img *ngIf="article.image" [src]="article.image" [alt]="article.title"
+                       class="w-32 h-24 object-cover rounded-lg cursor-pointer" (click)="viewArticle(article)">
+                  <div *ngIf="!article.image" class="w-32 h-24 bg-gray-200 rounded-lg flex items-center justify-center cursor-pointer" (click)="viewArticle(article)">
+                    <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                  </div>
+                </div>
+
+                <!-- Save Icon -->
+                <div class="flex-shrink-0 ml-4 relative">
+                  <button (click)="saveArticle(article)" class="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                    <svg class="w-5 h-5 text-gray-600 hover:text-[#101828]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>

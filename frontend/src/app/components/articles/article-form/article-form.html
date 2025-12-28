@@ -1,0 +1,96 @@
+<div class="bg-gray-50 min-h-screen">
+  <app-navbar></app-navbar>
+  <app-sidebar></app-sidebar>
+
+  <div class="ml-64 flex flex-col min-h-screen">
+    <main class="flex-1 px-12 py-6 overflow-y-auto pt-28">
+      <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-900 mb-6">
+          {{ isEditMode ? 'Edit Article' : 'Create New Article' }}
+        </h1>
+
+        <form [formGroup]="articleForm" (ngSubmit)="onSubmit()" class="bg-white rounded-lg shadow p-6">
+          <!-- Title -->
+          <div class="mb-6">
+            <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
+              Title
+            </label>
+            <input type="text" 
+                   id="title"
+                   formControlName="title"
+                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#101828] focus:border-transparent"
+                   [class.border-red-500]="articleForm.get('title')?.invalid && articleForm.get('title')?.touched">
+            <p *ngIf="articleForm.get('title')?.invalid && articleForm.get('title')?.touched" 
+               class="mt-1 text-sm text-red-600">
+              Title is required
+            </p>
+          </div>
+
+          <!-- Body -->
+          <div class="mb-6">
+            <label for="body" class="block text-sm font-medium text-gray-700 mb-2">
+              Body
+            </label>
+            <textarea id="body"
+                      formControlName="body"
+                      rows="12"
+                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#101828] focus:border-transparent"
+                      [class.border-red-500]="articleForm.get('body')?.invalid && articleForm.get('body')?.touched"></textarea>
+            <p *ngIf="articleForm.get('body')?.invalid && articleForm.get('body')?.touched" 
+               class="mt-1 text-sm text-red-600">
+              Body is required
+            </p>
+          </div>
+
+          <!-- Cover Image -->
+          <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Cover Image
+            </label>
+            <div class="flex items-center gap-4">
+              <input type="file" 
+                     id="image"
+                     accept="image/*"
+                     (change)="onFileSelected($event)"
+                     class="hidden">
+              <label for="image" 
+                     class="px-4 py-2 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                Choose File
+              </label>
+              <span class="text-sm text-gray-600">{{ fileName }}</span>
+            </div>
+            <div *ngIf="imagePreview" class="mt-4">
+              <img [src]="imagePreview" 
+                   alt="Preview" 
+                   class="max-w-md h-64 object-cover rounded-lg">
+            </div>
+          </div>
+
+          <!-- Publish Checkbox -->
+          <div class="mb-6">
+            <label class="flex items-center">
+              <input type="checkbox" 
+                     formControlName="publish"
+                     class="w-4 h-4 text-[#101828] border-gray-300 rounded focus:ring-[#101828]">
+              <span class="ml-2 text-sm text-gray-700">Publish Article</span>
+            </label>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex justify-end gap-4">
+            <button type="button" 
+                    (click)="onCancel()"
+                    class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+              Cancel
+            </button>
+            <button type="submit" 
+                    [disabled]="articleForm.invalid || loading"
+                    class="px-6 py-2 bg-[#101828] hover:bg-[#1F2937] text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+              {{ loading ? 'Saving...' : (isEditMode ? 'Save Changes' : 'Create Article') }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+</div>

@@ -1,0 +1,78 @@
+<div class="bg-gray-50 min-h-screen">
+  <app-navbar></app-navbar>
+  <app-sidebar></app-sidebar>
+
+  <div [ngClass]="sidebarOpen ? 'ml-64' : 'ml-0 slide-right'" class="flex flex-col min-h-screen">
+    <main class="flex-1 px-12 py-6 overflow-y-auto pt-28">
+      <div class="mb-6 flex items-center justify-between">
+        <h1 class="text-3xl font-bold text-gray-900">Manage Users</h1>
+        <div *ngIf="editingUserId" class="flex gap-2">
+          <button (click)="cancelEdit()" 
+                  class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+            Cancel
+          </button>
+          <button (click) = "saveEditedUser()">Save</button>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">USER</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">EMAIL</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ROLE</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr *ngFor="let user of users" class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center">
+                  <div *ngIf="user.profilePhoto" class="w-10 h-10 rounded-full overflow-hidden mr-3">
+                    <img [src]="user.profilePhoto"
+                         [alt]="user.fullName"
+                         class="w-full h-full object-cover">
+                  </div>
+                  <div *ngIf="!user.profilePhoto"
+                       class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-700 font-semibold text-sm mr-3">
+                    {{ getInitials(user.fullName) }}
+                  </div>
+                  <span class="text-sm font-medium text-gray-900">{{ user.fullName }}</span>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="text-sm text-gray-600">{{ user.email }}</span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div *ngIf="editingUserId === user.id" class="flex items-center gap-2">
+                  <select [(ngModel)]="editingRoleId" 
+                          class="px-3 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#101828] focus:border-transparent">
+                    <option *ngFor="let role of roles" [value]="role._id">{{ role.name }}</option>
+                  </select>
+                </div>
+                <div *ngIf="editingUserId !== user.id" class="flex items-center gap-2">
+                  <span class="text-sm font-medium text-gray-900">{{ user.role.name }}</span>
+                  <button *ngIf="hasPermission('edit')" 
+                          (click)="startEdit(user)"
+                          class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div *ngIf="loading" class="text-center py-12">
+          <p class="text-gray-600">Loading users...</p>
+        </div>
+
+        <div *ngIf="!loading && users.length === 0" class="text-center py-12">
+          <p class="text-gray-600">No users found.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
