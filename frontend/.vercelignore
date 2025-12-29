@@ -1,0 +1,6 @@
+node_modules
+.angular
+*.log
+.env.local
+.DS_Store
+

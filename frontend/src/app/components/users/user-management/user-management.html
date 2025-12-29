@@ -6,12 +6,19 @@
     <main class="flex-1 px-12 py-6 overflow-y-auto pt-28">
       <div class="mb-6 flex items-center justify-between">
         <h1 class="text-3xl font-bold text-gray-900">Manage Users</h1>
-        <div *ngIf="editingUserId" class="flex gap-2">
-          <button (click)="cancelEdit()" 
-                  class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+        <div *ngIf="editingUserId" class="flex gap-3">
+          <button 
+            (click)="cancelEdit()" 
+            [disabled]="saving"
+            class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed">
             Cancel
           </button>
-          <button (click) = "saveEditedUser()">Save</button>
+          <button 
+            (click)="saveEditedUser()"
+            [disabled]="saving"
+            class="px-4 py-2 bg-[#101828] text-white rounded hover:bg-[#1F2937] disabled:opacity-50 disabled:cursor-not-allowed">
+            {{ saving ? 'Saving...' : 'Save' }}
+          </button>
         </div>
       </div>
 
@@ -44,21 +51,26 @@
                 <span class="text-sm text-gray-600">{{ user.email }}</span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div *ngIf="editingUserId === user.id" class="flex items-center gap-2">
-                  <select [(ngModel)]="editingRoleId" 
-                          class="px-3 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#101828] focus:border-transparent">
+                <!-- Editing State: Show Dropdown -->
+                <div *ngIf="isEditing(user)">
+                  <select 
+                    [(ngModel)]="editingRoleId"
+                    class="text-sm text-gray-900 border border-gray-300 px-3 py-1.5 focus:outline-none focus:border-gray-500">
                     <option *ngFor="let role of roles" [value]="role._id">{{ role.name }}</option>
                   </select>
                 </div>
-                <div *ngIf="editingUserId !== user.id" class="flex items-center gap-2">
-                  <span class="text-sm font-medium text-gray-900">{{ user.role.name }}</span>
-                  <button *ngIf="hasPermission('edit')" 
-                          (click)="startEdit(user)"
-                          class="text-gray-400 hover:text-gray-600">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                  </button>
+                <!-- View State: Clickable Role Name -->
+                <div *ngIf="!isEditing(user) && hasPermission('edit')"
+                     (click)="startEdit(user)"
+                     class="cursor-pointer inline-flex items-center gap-1.5 group">
+                  <span class="text-sm text-gray-900 group-hover:text-gray-700">{{ user.role.name }}</span>
+                  <svg class="w-4 h-4 text-gray-400 group-hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </div>
+                <!-- View State: Non-editable Role Name -->
+                <div *ngIf="!isEditing(user) && !hasPermission('edit')">
+                  <span class="text-sm text-gray-900">{{ user.role.name }}</span>
                 </div>
               </td>
             </tr>

@@ -15,10 +15,33 @@ const seedSuperAdmin = async () => {
       process.exit(1);
     }
 
-    // Check if SuperAdmin user already exists
-    const existingSuperAdmin = await User.findOne({ role: superAdminRole._id });
+    // Check if SuperAdmin user already exists by email
+    let existingSuperAdmin = await User.findOne({ email: 'admin@cms.com' });
+    
     if (existingSuperAdmin) {
-      console.log('SuperAdmin user already exists:', existingSuperAdmin.email);
+      // User exists, check if they have SuperAdmin role
+      await existingSuperAdmin.populate('role');
+      if (existingSuperAdmin.role && existingSuperAdmin.role.name === 'SuperAdmin') {
+        console.log('SuperAdmin user already exists with correct role:', existingSuperAdmin.email);
+        mongoose.connection.close();
+        process.exit(0);
+      } else {
+        // User exists but doesn't have SuperAdmin role, update it
+        console.log('User exists but doesn\'t have SuperAdmin role. Updating role...');
+        existingSuperAdmin.role = superAdminRole._id;
+        existingSuperAdmin.isActive = true;
+        await existingSuperAdmin.save();
+        console.log('SuperAdmin role assigned to existing user:', existingSuperAdmin.email);
+        mongoose.connection.close();
+        process.exit(0);
+      }
+    }
+
+    // Check if any user already has SuperAdmin role
+    const userWithSuperAdminRole = await User.findOne({ role: superAdminRole._id });
+    if (userWithSuperAdminRole) {
+      console.log('SuperAdmin user already exists:', userWithSuperAdminRole.email);
+      mongoose.connection.close();
       process.exit(0);
     }
 

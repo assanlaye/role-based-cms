@@ -2,6 +2,37 @@ const User = require('../models/User');
 const Role = require('../models/Role');
 const { generateAccessToken, generateRefreshToken, verifyRefreshToken } = require('../config/jwt');
 
+// Helper function to serialize role object
+const serializeRole = (role) => {
+  if (!role) {
+    return null;
+  }
+  // If role is already a plain object (from toObject/toJSON), use it directly
+  // Otherwise, convert Mongoose document to plain object
+  const roleObj = role.toObject ? role.toObject() : role;
+  
+  // Handle _id - convert ObjectId to string if needed
+  let roleId = roleObj._id || roleObj.id;
+  if (roleId && typeof roleId === 'object' && roleId.toString) {
+    roleId = roleId.toString();
+  }
+  
+  return {
+    _id: roleId,
+    name: roleObj.name,
+    permissions: roleObj.permissions || {
+      create: false,
+      edit: false,
+      delete: false,
+      publish: false,
+      view: true
+    },
+    isCustom: roleObj.isCustom || false,
+    createdAt: roleObj.createdAt,
+    updatedAt: roleObj.updatedAt
+  };
+};
+
 // Register new user
 const register = async (req, res) => {
   try {

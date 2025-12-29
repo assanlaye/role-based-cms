@@ -62,6 +62,7 @@ export class Dashboard implements OnInit {
   }
 
   loadStats() {
+    // Only load articles - this doesn't require special permissions
     this.articleService.getAllArticles().subscribe({
       next: (articles) => {
         this.allArticles = articles;
@@ -74,14 +75,20 @@ export class Dashboard implements OnInit {
       }
     });
 
-    this.userService.getAllUsers().subscribe({
-      next: (users: any[]) => {
-        this.totalUsers = users.length;
-      },
-      error: (err: any) => {
-        console.error('Error loading users:', err);
-      }
-    });
+    // Only load users if current user has view permission
+    const currentUser = this.authService.getCurrentUser();
+    if (currentUser && currentUser.role && currentUser.role.permissions && currentUser.role.permissions.view) {
+      this.userService.getAllUsers().subscribe({
+        next: (users: any[]) => {
+          this.totalUsers = users.length;
+        },
+        error: (err: any) => {
+          console.error('Error loading users:', err);
+          // Don't fail the whole dashboard if users can't be loaded
+          this.totalUsers = 0;
+        }
+      });
+    }
   }
 
   setActiveTab(tab: 'home' | 'library') {

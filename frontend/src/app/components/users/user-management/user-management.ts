@@ -55,17 +55,6 @@ export class UserManagement implements OnInit {
       }
     });
   }
-  saveEditedUser() {
-    const user = this.users.find(u => u.id === this.editingUserId);
-  
-    if (!user) {
-      return; // safety check
-    }
-  
-    this.saveRole(user);
-  }
-  
-
   loadRoles() {
     this.roleService.getAllRoles().subscribe({
       next: (roles: Role[]) => {
@@ -78,7 +67,12 @@ export class UserManagement implements OnInit {
   }
 
   startEdit(user: User) {
-    this.editingUserId = user.id;
+    if (!this.hasPermission('edit')) {
+      return;
+    }
+    
+    const userId = (user as any).id || (user as any)._id;
+    this.editingUserId = userId;
     this.editingRoleId = user.role._id;
   }
 
@@ -87,20 +81,32 @@ export class UserManagement implements OnInit {
     this.editingRoleId = null;
   }
 
-  saveRole(user: User) {
-    if (!this.editingRoleId) return;
+  saveEditedUser() {
+    if (!this.editingUserId || !this.editingRoleId) {
+      return;
+    }
 
+    // Find user by id (handle both id and _id for compatibility)
+    const user = this.users.find(u => {
+      const userId = (u as any).id || (u as any)._id;
+      return userId === this.editingUserId;
+    });
+
+    if (!user) {
+      return;
+    }
+
+    const userId = (user as any).id || (user as any)._id;
     this.saving = true;
-    this.userService.updateUserRole(user.id, this.editingRoleId).subscribe({
+    this.userService.updateUserRole(userId, this.editingRoleId).subscribe({
       next: () => {
         this.loadUsers();
-        this.editingUserId = null;
-        this.editingRoleId = null;
+        this.cancelEdit();
         this.saving = false;
       },
       error: (err: any) => {
         console.error('Error updating user role:', err);
-        alert('Failed to update user role');
+        alert(err.error?.message || 'Failed to update user role');
         this.saving = false;
       }
     });
@@ -117,5 +123,13 @@ export class UserManagement implements OnInit {
       return (names[0][0] + names[1][0]).toUpperCase();
     }
     return names[0][0].toUpperCase();
+  }
+
+  getUserId(user: User): string {
+    return (user as any).id || (user as any)._id || '';
+  }
+
+  isEditing(user: User): boolean {
+    return this.editingUserId === this.getUserId(user);
   }
 }

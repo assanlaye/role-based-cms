@@ -116,9 +116,9 @@
               <div class="flex items-start justify-between">
                 <div class="flex-1">
                   <h3 (click)="viewArticle(article)" class="text-xl font-bold text-gray-900 mb-2 hover:text-[#101828] cursor-pointer line-clamp-2">{{ article.title }}</h3>
-                  <p class="text-gray-600 mb-3 line-clamp-3">{{ article.body?.substring(0, 200) }}...</p>
+                  <p class="text-gray-600 mb-3 line-clamp-3">{{ article.body.substring(0, 200) }}...</p>
                   <div class="flex items-center text-sm text-gray-500">
-                    <span class="font-medium">{{ article.author?.fullName || 'Unknown' }}</span>
+                    <span class="font-medium">{{ article.author.fullName || 'Unknown' }}</span>
                     <span class="mx-2">·</span>
                     <span>{{ formatDate(article.createdAt) }}</span>
                     <span class="mx-2">·</span>

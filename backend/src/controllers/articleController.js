@@ -30,7 +30,7 @@ const getAllArticles = async (req, res) => {
     let filter = {};
 
     // If user is Viewer, only show published articles
-    if (req.user.role.name === 'Viewer') {
+    if (req.user.role && req.user.role.name === 'Viewer') {
       filter.isPublished = true;
     }
 
@@ -55,7 +55,7 @@ const getArticleById = async (req, res) => {
     }
 
     // If user is Viewer and article is not published, deny access
-    if (req.user.role.name === 'Viewer' && !article.isPublished) {
+    if (req.user.role && req.user.role.name === 'Viewer' && !article.isPublished) {
       return res.status(403).json({ message: 'Access denied to unpublished article' });
     }
 
