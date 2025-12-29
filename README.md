@@ -70,24 +70,16 @@ Other roles are created by `npm run seed` (SuperAdmin, Manager, Contributor, Vie
 
 (Refer to `backend/src/routes/` for exact routes and request shapes.)
 
-**Deployment — Vercel (recommended approach)**
-This repository contains a separate `frontend/` and `backend/` folder. You can deploy them as two Vercel projects (one static/site for the Angular build, one Node server for the API), or deploy backend elsewhere and point the frontend to it.
+**Deployment (recommended — local or external host)**
+This repository is split into `frontend/` (Angular) and `backend/` (Express). You can host each separately — for example, serve the frontend as a static site and run the backend on any Node host (Heroku, Render, DigitalOcean, etc.).
 
-Recommended steps for Vercel:
-- Frontend
-  - Create a new project in Vercel pointing to the `frontend` folder.
-  - Build command: `npm run build`
-  - Output directory: the Angular build output (default `dist/` — confirm the actual folder after build)
-  - Set any environment variables needed at runtime for the frontend (e.g. `API_BASE_URL` if used)
+Quick production build & deploy notes:
+- Frontend: build with `npm run build` in `frontend/` and deploy the output directory from `dist/` (or your configured Angular build output).
+- Backend: deploy the `backend/` folder to any Node environment; ensure the environment variables described above are set and the process runs `npm start`.
 
-- Backend
-  - Create a new project in Vercel pointing to the `backend` folder (or deploy to Heroku/VPS).
-  - Set `Build & Development Settings` to run `npm install` and use `npm start` as the start command (or configure a Vercel Serverless Function if preferred).
-  - Add the required environment variables listed above in the Vercel dashboard.
-
-Notes:
-- Ensure CORS and API base URLs are configured correctly so the frontend can call the backend.
-- If deploying frontend and backend as separate Vercel projects, set the frontend `API_BASE_URL` env var to the backend's URL.
+Important:
+- Ensure CORS and API base URLs are configured so the frontend can reach the backend.
+- If you prefer a single-host monorepo deployment, adapt the host's configuration to serve the frontend static files and forward `/api` to the backend.
 
 **Testing & Troubleshooting**
 - After starting backend and frontend locally, register or log in with `admin@cms.com` / `admin123` to access admin features.
