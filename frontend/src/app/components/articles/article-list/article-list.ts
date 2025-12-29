@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 import { Sidebar } from '../../shared/sidebar/sidebar';
 import { Navbar } from '../../shared/navbar/navbar';
 import { ArticleService } from '../../../services/article.service';
@@ -16,7 +18,7 @@ import { Article } from '../../../models/article';
   templateUrl: './article-list.html',
   styleUrl: './article-list.css',
 })
-export class ArticleList implements OnInit {
+export class ArticleList implements OnInit, OnDestroy {
   articles: Article[] = [];
   filteredArticles: Article[] = [];
   selectedArticle: Article | null = null;
@@ -28,6 +30,9 @@ export class ArticleList implements OnInit {
   currentUser: any = null;
   loading = false;
   sidebarOpen = true;
+  isLibraryMode = false;
+  savedArticleIds: Set<string> = new Set();
+  private routerSubscription?: Subscription;
 
   constructor(
     private articleService: ArticleService,
@@ -46,16 +51,112 @@ export class ArticleList implements OnInit {
       this.sidebarOpen = open;
     });
 
+    // Check if we're in library mode
+    this.checkLibraryMode();
+    this.loadSavedArticleIds();
+
     this.route.params.subscribe(params => {
       if (params['id']) {
         this.loadArticle(params['id']);
       } else {
         this.selectedArticle = null;
+        this.checkLibraryMode();
+        if (this.isLibraryMode) {
+          this.loadSavedArticles();
+        } else {
+          this.loadArticles();
+        }
+      }
+    });
+
+    // Check route changes
+    this.routerSubscription = this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      this.checkLibraryMode();
+      if (this.isLibraryMode && !this.route.snapshot.params['id']) {
+        this.loadSavedArticles();
+      } else if (!this.isLibraryMode && !this.route.snapshot.params['id']) {
         this.loadArticles();
       }
     });
 
-    this.loadArticles();
+    if (this.isLibraryMode) {
+      this.loadSavedArticles();
+    } else {
+      this.loadArticles();
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.routerSubscription) {
+      this.routerSubscription.unsubscribe();
+    }
+  }
+
+  checkLibraryMode() {
+    this.isLibraryMode = this.router.url === '/library' || this.router.url.startsWith('/library');
+  }
+
+  loadSavedArticleIds() {
+    const savedIds = this.getSavedArticleIds();
+    this.savedArticleIds = new Set(savedIds);
+  }
+
+  loadSavedArticles() {
+    this.loading = true;
+    const savedIds = this.getSavedArticleIds();
+    this.savedArticleIds = new Set(savedIds);
+    
+    // Load all articles and filter to saved ones
+    this.articleService.getAllArticles().subscribe({
+      next: (articles) => {
+        // Filter to only saved articles
+        this.articles = articles.filter(article => savedIds.includes(article._id));
+        this.extractAuthors();
+        this.applyFilters();
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error loading saved articles:', err);
+        this.loading = false;
+      }
+    });
+  }
+
+  getSavedArticleIds(): string[] {
+    const saved = localStorage.getItem('savedArticles');
+    return saved ? JSON.parse(saved) : [];
+  }
+
+  saveSavedArticleIds(ids: string[]) {
+    localStorage.setItem('savedArticles', JSON.stringify(ids));
+    this.savedArticleIds = new Set(ids);
+  }
+
+  saveArticle(article: Article) {
+    const savedIds = this.getSavedArticleIds();
+    if (!savedIds.includes(article._id)) {
+      savedIds.push(article._id);
+      this.saveSavedArticleIds(savedIds);
+      // Navigate to library
+      this.router.navigate(['/library']);
+    }
+  }
+
+  unsaveArticle(article: Article) {
+    const savedIds = this.getSavedArticleIds();
+    const filteredIds = savedIds.filter(id => id !== article._id);
+    this.saveSavedArticleIds(filteredIds);
+    
+    // Reload saved articles if in library mode
+    if (this.isLibraryMode) {
+      this.loadSavedArticles();
+    }
+  }
+
+  isArticleSaved(articleId: string): boolean {
+    return this.savedArticleIds.has(articleId);
   }
 
   loadArticles() {
@@ -98,7 +199,14 @@ export class ArticleList implements OnInit {
   applyFilters() {
     let filtered = [...this.articles];
 
-    // Tab filter
+    // For viewers and library mode, show all articles (backend already filters published for viewers)
+    if (this.currentUser?.role?.name === 'Viewer' || this.isLibraryMode) {
+      // All articles are already filtered by backend for viewers
+      this.filteredArticles = filtered;
+      return;
+    }
+
+    // Tab filter (only for non-viewers)
     if (this.currentTab === 'published') {
       filtered = filtered.filter(a => a.isPublished);
     } else if (this.currentTab === 'draft') {
@@ -207,6 +315,10 @@ export class ArticleList implements OnInit {
   }
 
   closeArticleView() {
-    this.router.navigate(['/articles']);
+    if (this.isLibraryMode) {
+      this.router.navigate(['/library']);
+    } else {
+      this.router.navigate(['/articles']);
+    }
   }
 }

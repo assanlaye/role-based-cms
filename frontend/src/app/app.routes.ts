@@ -35,6 +35,10 @@ export const routes: Routes = [
         loadComponent: () => import('./components/articles/article-form/article-form').then(m => m.ArticleForm)
       },
       {
+        path: 'library',
+        loadComponent: () => import('./components/articles/article-list/article-list').then(m => m.ArticleList)
+      },
+      {
         path: 'users',
         loadComponent: () => import('./components/users/user-management/user-management').then(m => m.UserManagement)
       },

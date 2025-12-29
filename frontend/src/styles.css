@@ -6,7 +6,7 @@
 /* Sidebar content slide animation */
 @keyframes slideRight {
   from {
-    margin-left: 16rem; /* ml-64 */
+    margin-left: 12rem; /* ml-48 */
   }
   to {
     margin-left: 0;
@@ -18,6 +18,75 @@
 }
 
 /* Prevent animation when sidebar is opening */
-.ml-64 {
+.ml-48 {
   animation: none !important;
+}
+
+
+/* Filters row controls: improved dropdowns and focus style */
+.filters-row input[type="text"],
+.filters-row select,
+.filters-row input[type="date"] {
+  background: white;
+  border: 1px solid #E6E7EA;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  transition: box-shadow 150ms ease, border-color 150ms ease;
+  appearance: auto;
+  -webkit-appearance: textfield;
+}
+
+.filters-row select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, #9CA3AF 50%), linear-gradient(135deg, #9CA3AF 50%, transparent 50%);
+  background-position: calc(100% - 18px) calc(1em + 2px), calc(100% - 13px) calc(1em + 2px);
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+  padding-right: 2.25rem;
+}
+
+.filters-row input[type="text"]:focus,
+.filters-row select:focus,
+.filters-row input[type="date"]:focus {
+  outline: none;
+  border-color: #CBD5E1;
+  box-shadow: 0 0 0 4px rgba(15,23,42,0.04);
+}
+
+/* Role management: neutral focus for inputs and buttons to avoid default black outline */
+app-role-management input:focus,
+app-role-management input[type="search"]:focus,
+app-role-management button:focus,
+app-role-management .search input:focus,
+app-role-management .search button:focus {
+  outline: none;
+  border-color: #CBD5E1 !important;
+  box-shadow: 0 0 0 4px rgba(15,23,42,0.04) !important;
+}
+
+/* -- Remove rounded corners globally (Tailwind utility classes) -- */
+.rounded,
+.rounded-sm,
+.rounded-md,
+.rounded-lg,
+.rounded-xl,
+.rounded-2xl,
+.rounded-full {
+  border-radius: 0 !important;
+}
+
+/* Catch any remaining rounded-* utilities (e.g., rounded-t-lg) */
+[class*="rounded-"] {
+  border-radius: 0 !important;
+}
+
+/* -- Keep user profile avatars rounded -- */
+app-navbar .rounded-full,
+app-user-management .rounded-full,
+app-register .rounded-full,
+app-user-management img.rounded-full,
+app-navbar img.rounded-full {
+  border-radius: 9999px !important;
 }
