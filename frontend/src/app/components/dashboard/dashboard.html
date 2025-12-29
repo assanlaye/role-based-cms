@@ -105,11 +105,7 @@
       <div *ngIf="currentUser?.role?.name === 'Viewer'">
         <!-- Articles Horizontal Layout -->
         <div class="space-y-8">
-          <div *ngFor="let article of publishedArticles; let i = index" class="flex gap-10 pb-10 border-b border-gray-200 last:border-b-0">
-            <!-- Article Number -->
-            <div class="flex-shrink-0 text-4xl font-bold text-gray-300 w-12 text-center">
-              {{ i + 1 }}
-            </div>
+          <div *ngFor="let article of publishedArticles" class="flex gap-10 pb-10 border-b border-gray-200 last:border-b-0">
 
             <!-- Article Content -->
             <div class="flex-1">
