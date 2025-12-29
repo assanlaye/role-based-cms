@@ -1,22 +1,26 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../services/auth.service';
 import { SidebarService } from '../../../services/sidebar.service';
+import { ViewerSearchService } from '../../../services/viewer-search.service';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
 export class Navbar implements OnInit {
   currentUser: any = null;
   sidebarOpen = true;
+  viewerSearchLocal = '';
 
   constructor(
     private authService: AuthService,
     private sidebarService: SidebarService
+    , private viewerSearch: ViewerSearchService
   ) {}
 
   ngOnInit() {
@@ -40,5 +44,9 @@ export class Navbar implements OnInit {
 
   toggleSidebar() {
     this.sidebarService.toggleSidebar();
+  }
+
+  updateViewerSearch(q: string) {
+    this.viewerSearch.set(q || '');
   }
 }

@@ -103,9 +103,9 @@
 
       <!-- Viewer Interface -->
       <div *ngIf="currentUser?.role?.name === 'Viewer'">
-        <!-- Articles Horizontal Layout -->
+        <!-- Articles Horizontal Layout (filtered by viewer search) -->
         <div class="space-y-8">
-          <div *ngFor="let article of publishedArticles" class="flex gap-10 pb-10 border-b border-gray-200 last:border-b-0">
+          <div *ngFor="let article of filteredPublishedArticles" class="flex gap-10 pb-10 border-b border-gray-200 last:border-b-0">
 
             <!-- Article Content -->
             <div class="flex-1">

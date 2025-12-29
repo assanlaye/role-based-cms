@@ -8,6 +8,7 @@ import { UserService } from '../../services/user';
 import { AuthService } from '../../services/auth.service';
 import { SidebarService } from '../../services/sidebar.service';
 import { Article } from '../../models/article';
+import { ViewerSearchService } from '../../services/viewer-search.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -30,12 +31,14 @@ export class Dashboard implements OnInit {
   librarySubTab: 'saved' | 'history' = 'saved';
   allArticles: Article[] = [];
   menuOpenArticleId: string | null = null;
+  viewerSearch: string = '';
 
   constructor(
     private articleService: ArticleService,
     private userService: UserService,
     private authService: AuthService,
     private sidebarService: SidebarService,
+    private viewerSearchService: ViewerSearchService,
     private route: ActivatedRoute,
     private router: Router
   ) {}
@@ -59,6 +62,11 @@ export class Dashboard implements OnInit {
     });
 
     this.loadStats();
+
+    // subscribe to viewer search queries
+    this.viewerSearchService.changes().subscribe(q => {
+      this.viewerSearch = q || '';
+    });
   }
 
   loadStats() {
@@ -129,6 +137,17 @@ export class Dashboard implements OnInit {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
+    });
+  }
+
+  get filteredPublishedArticles(): Article[] {
+    const q = (this.viewerSearch || '').trim().toLowerCase();
+    if (!q) return this.publishedArticles;
+    return this.publishedArticles.filter(a => {
+      const title = (a.title || '').toLowerCase();
+      const body = (a.body || '').toLowerCase();
+      const author = ((a.author && a.author.fullName) || '').toLowerCase();
+      return title.includes(q) || body.includes(q) || author.includes(q);
     });
   }
 }

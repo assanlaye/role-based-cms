@@ -12,6 +12,14 @@
       <img src="/PeerLoo-CMS-logo.svg" alt="PeerLoo CMS" class="h-8 w-auto">
       <span class="sr-only">PeerLoo CMS</span>
     </div>
+    <!-- Viewer search placed beside logo -->
+    <div *ngIf="currentUser?.role?.name === 'Viewer'" class="ml-4">
+      <input [(ngModel)]="viewerSearchLocal"
+             (ngModelChange)="updateViewerSearch($event)"
+             type="text"
+             placeholder="Search articles..."
+             class="px-3 py-1.5 border border-gray-200 rounded-md text-sm w-72 focus:ring-2 focus:ring-[#101828]" />
+    </div>
   </div>
   <div class="flex items-center space-x-3">
     <div *ngIf="currentUser?.profilePhoto" class="w-10 h-10 rounded-full overflow-hidden">
