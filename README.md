@@ -1,4 +1,4 @@
-# Role-Based CMS
+3# Role-Based CMS
 
 A minimal role-based Content Management System (CMS) with an Angular frontend and an Express + MongoDB backend. Includes role-based permissions (SuperAdmin, Manager, Contributor, Viewer), article management, authentication (JWT), and Cloudinary image uploads.
 
@@ -98,8 +98,41 @@ Important:
   - Services: `frontend/src/app/services/`
   - Global styles: `frontend/src/styles.css`
 
+**Deployment on Vercel**
+
+This project is configured for easy deployment on Vercel with the included `vercel.json` file.
+
+1. **Prerequisites**:
+   - Vercel account
+   - MongoDB Atlas database
+   - Cloudinary account (optional)
+
+2. **Deploy to Vercel**:
+   - Connect your GitHub repository to Vercel
+   - Vercel will automatically detect the `vercel.json` configuration
+   - Set the following environment variables in Vercel dashboard:
+     - `MONGODB_URI` - Your MongoDB connection string
+     - `JWT_SECRET` - Random string for JWT signing
+     - `JWT_EXPIRE` - e.g., "1h"
+     - `JWT_REFRESH_SECRET` - Random string for refresh tokens
+     - `JWT_REFRESH_EXPIRE` - e.g., "7d"
+     - `CLOUDINARY_CLOUD_NAME` (optional)
+     - `CLOUDINARY_API_KEY` (optional)
+     - `CLOUDINARY_API_SECRET` (optional)
+     - `FRONTEND_URL` - Your Vercel deployment URL (optional, auto-configured)
+
+3. **Post-deployment setup**:
+   - Access your deployed app
+   - The backend API will be available at `https://your-app.vercel.app/api`
+   - Seed the database: Visit `https://your-app.vercel.app/api/seed` or run locally
+   - Create SuperAdmin: Visit `https://your-app.vercel.app/api/seed-admin` or run locally
+
+**Vercel Configuration Details**:
+- Frontend builds to `dist/frontend`
+- Backend runs as serverless functions
+- API routes are automatically routed to backend
+- CORS is configured for Vercel domains
+
 If you want, I can:
-- Add example `vercel.json` configuration snippets for both frontend and backend.
 - Re-enable or implement the soft-delete / Trash flow for articles (backend + frontend).
 - Run quick verification scripts or update the README with screenshots and exact build output path after you run `npm run build`.
-
