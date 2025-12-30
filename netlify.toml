@@ -2,8 +2,8 @@
   # Build the Angular frontend from the frontend directory
   base    = "frontend"
   command = "yarn install && yarn build"
-  # Angular 17+ application builder outputs to: dist/frontend/browser
-  publish = "dist/frontend/browser"
+  # Angular build outputs to: dist (inside the frontend base)
+  publish = "dist"
 
 # SPA-style routing so deep links don't 404 and are handled by Angular.
 [[redirects]]
