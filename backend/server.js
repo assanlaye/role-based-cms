@@ -21,7 +21,13 @@ app.use(cors({
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     
-    // Allow requests from localhost, Vercel deployments, and configured frontend URL
+    // In production (Render), allow all origins since frontend can be hosted anywhere
+    // This is safe because authentication is still required via JWT tokens
+    if (process.env.NODE_ENV === 'production' || process.env.RENDER) {
+      return callback(null, true);
+    }
+    
+    // In development, allow requests from localhost, Vercel deployments, and configured frontend URL
     const allowedOrigins = [
       /^http:\/\/localhost:\d+$/,
       /^https:\/\/.*\.vercel\.app$/,

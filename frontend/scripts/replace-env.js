@@ -4,7 +4,8 @@ const fs = require('fs');
 const path = require('path');
 
 const envFile = path.join(__dirname, '../src/environments/environment.prod.ts');
-const apiUrl = process.env.NG_APP_API_URL || '/api';
+// Default to Render backend URL if not specified
+const apiUrl = process.env.NG_APP_API_URL || 'https://role-based-cms.onrender.com/api';
 
 let content = fs.readFileSync(envFile, 'utf8');
 
