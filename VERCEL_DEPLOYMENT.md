@@ -63,6 +63,8 @@ Before deploying, you need to set up the following environment variables in Verc
    - Vercel will automatically detect the `vercel.json` configuration
    - **Root Directory**: Leave as `.` (root)
    - **Framework Preset**: Other (or leave default)
+   - **Build Command**: `cd frontend && yarn install && yarn build`
+   - **Output Directory**: `frontend/dist/browser`
    - Click "Deploy"
 
 3. **Add Environment Variables**
@@ -151,8 +153,8 @@ Run locally (pointing to production MongoDB):
 
 The project is configured as a monorepo with:
 
-- **Frontend**: Angular application (builds to `frontend/dist/frontend`)
-- **Backend**: Express API (runs as serverless functions)
+- **Frontend**: Angular application (builds to `frontend/dist/browser`)
+- **Backend**: Express API (runs as serverless functions via `api/index.js`)
 
 ### Routing
 
@@ -184,11 +186,15 @@ The project is configured as a monorepo with:
 2. Verify connection string format
 3. Check database user permissions
 
-### 404 Errors
+### 404 / NOT_FOUND Errors
 
-1. Ensure `vercel.json` is in the root directory
-2. Check that Angular build completed successfully
-3. Verify routing configuration in `vercel.json`
+1. Ensure `vercel.json` is in the root directory (and doesn't use deprecated `builds` array)
+2. Check that Angular build completed successfully and output is in `frontend/dist/browser`
+3. Verify routing configuration in `vercel.json` uses `rewrites` (not deprecated `routes`)
+4. Ensure `api/index.js` exists and properly exports the Express app
+5. Configure Build Command and Output Directory in Vercel project settings:
+   - Build Command: `cd frontend && yarn install && yarn build`
+   - Output Directory: `frontend/dist/browser`
 
 ## Environment Variables Reference
 
