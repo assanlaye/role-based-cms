@@ -17,14 +17,23 @@ connectDB();
 
 // Middleware
 app.use(cors({
-  origin: process.env.FRONTEND_URL || function (origin, callback) {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
     // Allow requests from Vercel deployments and localhost
     const allowedOrigins = [
       /^https:\/\/.*\.vercel\.app$/,
-      /^http:\/\/localhost:\d+$/
-    ];
+      /^http:\/\/localhost:\d+$/,
+      process.env.FRONTEND_URL
+    ].filter(Boolean);
 
-    if (!origin || allowedOrigins.some(pattern => pattern.test(origin))) {
+    if (allowedOrigins.some(pattern => {
+      if (typeof pattern === 'string') {
+        return origin === pattern;
+      }
+      return pattern.test(origin);
+    })) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
