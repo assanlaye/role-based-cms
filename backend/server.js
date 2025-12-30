@@ -21,9 +21,10 @@ app.use(cors({
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     
-    // Allow requests from localhost and configured frontend URL
+    // Allow requests from localhost, Vercel deployments, and configured frontend URL
     const allowedOrigins = [
       /^http:\/\/localhost:\d+$/,
+      /^https:\/\/.*\.vercel\.app$/,
       process.env.FRONTEND_URL
     ].filter(Boolean);
 

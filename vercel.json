@@ -1,0 +1,15 @@
+{
+  "buildCommand": "cd frontend && yarn install && yarn build",
+  "outputDirectory": "frontend/dist/browser",
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api.js"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
+
