@@ -1,0 +1,10 @@
+{
+  "name": "role-based-cms",
+  "version": "1.0.0",
+  "description": "Role-Based CMS with Angular frontend and Express backend",
+  "scripts": {
+    "build:netlify": "cd backend && npm install && cd ../frontend && yarn install && yarn build"
+  },
+  "private": true
+}
+

@@ -36,3 +36,6 @@ yarn-error.log*
 *.tmp
 *.temp
 
+# Backend (functions will be copied)
+backend/node_modules/
+

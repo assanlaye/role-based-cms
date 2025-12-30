@@ -98,24 +98,24 @@ Important:
   - Services: `frontend/src/app/services/`
   - Global styles: `frontend/src/styles.css`
 
-**Deployment on Vercel**
+**Deployment on Netlify**
 
-This project is configured for easy deployment on Vercel with the included `vercel.json` file.
+This project is configured for easy deployment on Netlify with the included `netlify.toml` file.
 
-📖 **For detailed deployment instructions, see [VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md)**
+📖 **For detailed deployment instructions, see [NETLIFY_DEPLOYMENT.md](./NETLIFY_DEPLOYMENT.md)**
 
 **Quick Start**:
-1. Connect your GitHub repository to Vercel
-2. Set environment variables (see VERCEL_DEPLOYMENT.md for full list)
-3. Deploy - Vercel will automatically detect the `vercel.json` configuration
+1. Connect your GitHub repository to Netlify
+2. Set environment variables (see NETLIFY_DEPLOYMENT.md for full list)
+3. Deploy - Netlify will automatically detect the `netlify.toml` configuration
 4. Seed the database with roles and SuperAdmin user
 
-**Vercel Configuration Details**:
-- Frontend builds to `dist/frontend` (Angular production build)
-- Backend runs as serverless functions (@vercel/node)
-- API routes (`/api/*`) are automatically routed to backend
-- Frontend routes (`/*`) serve the Angular application
-- CORS is configured for Vercel domains and localhost
+**Netlify Configuration Details**:
+- Frontend builds to `frontend/dist/frontend` (Angular production build)
+- Backend runs as Netlify Functions (serverless-http wrapper)
+- API routes (`/api/*`) are automatically routed to backend functions
+- Frontend routes (`/*`) serve the Angular application with SPA redirect
+- CORS is configured for Netlify domains and localhost
 - MongoDB connections are optimized for serverless environments
 
 If you want, I can:
