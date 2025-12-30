@@ -132,4 +132,48 @@ export class UserManagement implements OnInit {
   isEditing(user: User): boolean {
     return this.editingUserId === this.getUserId(user);
   }
+
+  deleteUser(user: User) {
+    if (!this.hasPermission('delete')) {
+      return;
+    }
+
+    const userId = this.getUserId(user);
+    const currentUser = this.authService.getCurrentUser();
+    const currentUserId = currentUser ? (currentUser as any).id || (currentUser as any)._id : null;
+
+    // Prevent deleting yourself
+    if (userId === currentUserId) {
+      alert('You cannot delete your own account.');
+      return;
+    }
+
+    // Confirmation dialog
+    const confirmed = confirm(`Are you sure you want to delete user "${user.fullName}" (${user.email})? This action cannot be undone.`);
+    
+    if (!confirmed) {
+      return;
+    }
+
+    this.saving = true;
+    this.userService.deleteUser(userId).subscribe({
+      next: () => {
+        this.loadUsers();
+        this.saving = false;
+      },
+      error: (err: any) => {
+        console.error('Error deleting user:', err);
+        alert(err.error?.message || 'Failed to delete user');
+        this.saving = false;
+      }
+    });
+  }
+
+  isCurrentUser(user: User): boolean {
+    const userId = this.getUserId(user);
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser) return false;
+    const currentUserId = (currentUser as any).id || (currentUser as any)._id;
+    return userId === currentUserId;
+  }
 }

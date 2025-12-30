@@ -1,92 +1,382 @@
 # Role-Based CMS
 
-A role-based Content Management System (CMS) with an Angular frontend and an Express + MongoDB backend. Includes role-based permissions (SuperAdmin, Manager, Contributor, Viewer), article management, authentication (JWT), and Cloudinary image uploads.
+A full-stack Content Management System (CMS) with role-based access control, built with Angular frontend and Express + MongoDB backend. Features include user authentication (JWT), article management, role-based permissions, and Cloudinary image uploads.
 
-**Prerequisites**
-- Node.js (v18+ recommended)
-- npm
-- MongoDB instance (Atlas or local)
-- Cloudinary account (optional, for image uploads)
+## Table of Contents
 
-**Environment variables**
-Create a `.env` file in `backend/` with the following keys:
+- [Features](#features)
+- [Prerequisites](#prerequisites)
+- [Installation & Setup](#installation--setup)
+- [API Endpoints](#api-endpoints)
+- [Pre-Created Test Users](#pre-created-test-users)
+- [Role Permissions](#role-permissions)
+- [Screenshots](#screenshots)
+- [Project Structure](#project-structure)
+- [Deployment](#deployment)
+- [Troubleshooting](#troubleshooting)
 
-- `MONGODB_URI` - MongoDB connection string
-- `PORT` - Backend port (optional, defaults to 3000)
-- `JWT_SECRET` - JWT access token secret
-- `JWT_EXPIRE` - Access token expiry (e.g. `1h`)
-- `JWT_REFRESH_SECRET` - JWT refresh token secret
-- `JWT_REFRESH_EXPIRE` - Refresh token expiry (e.g. `7d`)
-- `CLOUDINARY_CLOUD_NAME` - Cloudinary cloud name (optional)
-- `CLOUDINARY_API_KEY` - Cloudinary API key (optional)
-- `CLOUDINARY_API_SECRET` - Cloudinary API secret (optional)
+## Features
 
-**Local setup — Backend**
-1. cd backend
-2. npm install
-3. Create `.env` with the variables above
-4. Seed default roles: `npm run seed`
-5. Seed SuperAdmin user: `npm run seed-admin` (creates `admin@cms.com` / `admin123`)
-6. Start server: `npm run dev` (requires `nodemon`) or `npm start`
+- 🔐 **JWT Authentication** - Secure login with access and refresh tokens
+- 👥 **Role-Based Access Control** - Four predefined roles with granular permissions
+- 📝 **Article Management** - Create, edit, delete, and publish articles
+- 🖼️ **Image Uploads** - Cloudinary integration for profile photos and article images
+- 🎨 **Modern UI** - Built with Angular and Tailwind CSS
+- 🔒 **Permission Middleware** - Route-level permission checking
 
-**Local setup — Frontend**
-1. cd frontend
-2. npm install
-3. Start dev server: `npm run start` (opens on `http://localhost:4200` by default)
-4. Build for production: `npm run build` (outputs to `dist/`)
+## Prerequisites
 
-**Seeding / Test Accounts**
-- SuperAdmin (created by `npm run seed-admin`):
-  - Email: admin@cms.com
-  - Password: admin123
-  - Please change this password after first login.
+Before you begin, ensure you have the following installed:
 
-Other roles are created by `npm run seed` (SuperAdmin, Manager, Contributor, Viewer). Create additional users via the app registration or the Users admin UI once logged in as SuperAdmin.
+| Requirement | Version | Description |
+|------------|---------|-------------|
+| Node.js | v18+ | JavaScript runtime |
+| npm | Latest | Package manager |
+| MongoDB | - | Database (Atlas or local instance) |
+| Cloudinary Account | - | Optional, for image uploads |
 
-**API (overview)**
-- Auth
-  - POST `/api/auth/register` — register new user
-  - POST `/api/auth/login` — login (returns access + refresh tokens)
-  - POST `/api/auth/refresh` — refresh access token
-  - POST `/api/auth/logout` — revoke refresh token
+## Installation & Setup
 
-- Users
-  - GET `/api/users` — list users (admin)
-  - GET `/api/users/:id` — get user
-  - PUT `/api/users/:id` — update user
+### Step 1: Clone the Repository
 
-- Roles & Permissions
-  - GET `/api/roles` — list roles
-  - POST `/api/roles` — create role (admin)
-  - PUT `/api/roles/:id` — update role
+```bash
+git clone https://github.com/assanlaye/role-based-cms.git
+cd role-based-cms
+```
 
-- Articles
-  - GET `/api/articles` — list articles
-  - GET `/api/articles/:id` — get article
-  - POST `/api/articles` — create article
-  - PUT `/api/articles/:id` — update article
-  - DELETE `/api/articles/:id` — delete article
-  - PATCH `/api/articles/:id/publish` — toggle publish state
+### Step 2: Backend Setup
 
-(Refer to `backend/src/routes/` for exact routes and request shapes.)
+1. **Navigate to backend directory:**
+   ```bash
+   cd backend
+   ```
 
-**Testing & Troubleshooting**
-- After starting backend and frontend locally, register or log in with `admin@cms.com` / `admin123` to access admin features.
-- Use the `seed` scripts if roles or SuperAdmin are missing.
-- Check console logs for errors; backend logs appear in the terminal running the server.
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-**Where to look in the code**
-- Backend
-  - Routes: `backend/src/routes/`
-  - Controllers: `backend/src/controllers/`
-  - Models: `backend/src/models/`
-  - Utilities & seeds: `backend/src/utils/`
+3. **Create environment variables file:**
+   
+   Create a `.env` file in the `backend/` directory with the following variables:
 
-- Frontend
-  - Components: `frontend/src/app/components/`
-  - Services: `frontend/src/app/services/`
-  - Global styles: `frontend/src/styles.css`
+   ```env
+   MONGODB_URI=your_mongodb_connection_string
+   PORT=3000
+   JWT_SECRET=your_jwt_secret_key
+   JWT_EXPIRE=1h
+   JWT_REFRESH_SECRET=your_refresh_token_secret
+   JWT_REFRESH_EXPIRE=7d
+   CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+   CLOUDINARY_API_KEY=your_cloudinary_api_key
+   CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+   ```
 
-If you want, I can:
-- Re-enable or implement the soft-delete / Trash flow for articles (backend + frontend).
-- Run quick verification scripts or update the README with screenshots and exact build output path after you run `npm run build`.
+   > **Note:** Cloudinary variables are optional. If not provided, image uploads will fail but other features will work.
+
+4. **Seed default roles:**
+   ```bash
+   npm run seed
+   ```
+   This creates four default roles: SuperAdmin, Manager, Contributor, and Viewer.
+
+5. **Seed SuperAdmin user:**
+   ```bash
+   npm run seed-admin
+   ```
+   This creates the default admin user (see [Pre-Created Test Users](#pre-created-test-users)).
+
+6. **Start the backend server:**
+   ```bash
+   # Development mode (with auto-reload)
+   npm run dev
+   
+   # Production mode
+   npm start
+   ```
+   
+   The backend will run on `http://localhost:3000` (or the PORT specified in `.env`).
+
+### Step 3: Frontend Setup
+
+1. **Navigate to frontend directory:**
+   ```bash
+   cd ../frontend
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Configure API URL:**
+   
+   For local development, the frontend is configured to use `http://localhost:3000/api` by default.
+   
+   If your backend runs on a different port, update `frontend/src/environments/environment.ts`:
+   ```typescript
+   export const environment = {
+     production: false,
+     apiUrl: 'http://localhost:YOUR_PORT/api'
+   };
+   ```
+
+4. **Start the development server:**
+   ```bash
+   npm start
+   ```
+   
+   The frontend will open at `http://localhost:4200`.
+
+5. **Build for production:**
+   ```bash
+   npm run build
+   ```
+   
+   The production build will be in `frontend/dist/` directory.
+
+## API Endpoints
+
+### Authentication Endpoints
+
+| Method | Endpoint | Description | Auth Required | Request Body |
+|--------|----------|-------------|---------------|--------------|
+| POST | `/api/auth/register` | Register new user | No | `{ fullName, email, password, profilePhoto? }` |
+| POST | `/api/auth/login` | Login user | No | `{ email, password }` |
+| POST | `/api/auth/refresh` | Refresh access token | No | `{ refreshToken }` |
+| POST | `/api/auth/logout` | Logout user | No | `{ refreshToken }` |
+| GET | `/api/auth/profile` | Get current user profile | Yes | - |
+
+### User Management Endpoints
+
+| Method | Endpoint | Description | Auth Required | Permission Required |
+|--------|----------|-------------|----------------|---------------------|
+| GET | `/api/users` | Get all users | Yes | `view` |
+| GET | `/api/users/:id` | Get user by ID | Yes | - |
+| PUT | `/api/users/:id/role` | Update user role | Yes | `edit` |
+| DELETE | `/api/users/:id` | Delete user | Yes | `delete` |
+
+### Role Management Endpoints
+
+| Method | Endpoint | Description | Auth Required | Permission Required |
+|--------|----------|-------------|----------------|---------------------|
+| GET | `/api/roles` | Get all roles | Yes | - |
+| GET | `/api/roles/access-matrix` | Get permission matrix | Yes | - |
+| GET | `/api/roles/:id` | Get role by ID | Yes | - |
+| POST | `/api/roles` | Create custom role | Yes | `create` |
+| PUT | `/api/roles/:id` | Update role | Yes | `edit` |
+| DELETE | `/api/roles/:id` | Delete custom role | Yes | `delete` |
+
+### Article Management Endpoints
+
+| Method | Endpoint | Description | Auth Required | Permission Required |
+|--------|----------|-------------|----------------|---------------------|
+| GET | `/api/articles` | Get all articles | Yes | - |
+| GET | `/api/articles/:id` | Get article by ID | Yes | - |
+| POST | `/api/articles` | Create article | Yes | `create` |
+| PUT | `/api/articles/:id` | Update article | Yes | `edit` |
+| DELETE | `/api/articles/:id` | Delete article | Yes | `delete` |
+| PATCH | `/api/articles/:id/publish` | Toggle publish status | Yes | `publish` |
+
+> **Note:** 
+> - All authenticated endpoints require a Bearer token in the `Authorization` header: `Authorization: Bearer <accessToken>`
+> - Viewers can only see published articles
+> - File uploads (profile photos, article images) use `multipart/form-data`
+
+## Pre-Created Test Users
+
+After running the setup commands, the following test user is automatically created:
+
+### SuperAdmin User
+
+| Field | Value |
+|-------|-------|
+| **Email** | `admin@cms.com` |
+| **Password** | `admin123` |
+| **Role** | SuperAdmin |
+| **Full Name** | Super Admin |
+
+> ⚠️ **Security Warning:** Please change the default password immediately after first login!
+
+### Creating Additional Test Users
+
+To test other roles, you can:
+
+1. **Register new users via the UI:**
+   - New registrations automatically get the `Viewer` role
+   - Log in as SuperAdmin to change user roles
+
+2. **Use SuperAdmin to assign roles:**
+   - Navigate to Users management page
+   - Update any user's role to Manager, Contributor, or Viewer
+
+3. **Create users programmatically:**
+   - Use the registration endpoint or MongoDB directly
+   - Assign roles using the `/api/users/:id/role` endpoint
+
+## Role Permissions
+
+The system includes four predefined roles with the following permissions:
+
+| Permission | SuperAdmin | Manager | Contributor | Viewer |
+|------------|:----------:|:-------:|:------------:|:-----:|
+| **Create** | ✅ | ✅ | ✅ | ❌ |
+| **Edit** | ✅ | ✅ | ✅ | ❌ |
+| **Delete** | ✅ | ❌ | ❌ | ❌ |
+| **Publish** | ✅ | ✅ | ❌ | ❌ |
+| **View** | ✅ | ✅ | ✅ | ✅ |
+
+### Role Descriptions
+
+| Role | Description | Use Case |
+|------|-------------|----------|
+| **SuperAdmin** | Full system access | System administrators, developers |
+| **Manager** | Can create, edit, and publish content | Content managers, editors |
+| **Contributor** | Can create and edit but cannot publish | Content writers, authors |
+| **Viewer** | Read-only access to published content | General users, readers |
+
+> **Note:** Custom roles can be created by SuperAdmin users with specific permission combinations.
+
+## Screenshots
+
+### Authentication Pages
+
+#### Login Page
+![Login Page](./screenshots/login-page.png)
+*User login interface with email and password fields*
+
+#### Registration Page
+![Registration Page](./screenshots/registration-page.png)
+*New user registration form with profile photo upload*
+
+### Dashboard
+
+#### Main Dashboard
+![Dashboard](./screenshots/dashboard.png)
+*Overview dashboard showing system statistics and recent activity*
+
+### Article Management
+
+#### Article List
+![Article List](./screenshots/article-list.png)
+*List view of all articles with filter and search functionality*
+
+#### Create/Edit Article
+![Article Form](./screenshots/article-form.png)
+*Form for creating or editing articles with rich text editor and image upload*
+
+### User Management
+
+#### Users Management Page
+![User Management](./screenshots/user-management.png)
+*User management interface for viewing and managing all system users*
+
+#### Role Assignment
+![Role Assignment](./screenshots/role-assignment.png)
+*Interface for assigning roles to users*
+
+### Role Management
+
+#### Roles Management Page
+![Role Management](./screenshots/role-management.png)
+*Role management interface showing all roles and their permissions*
+
+#### Permission Matrix
+![Permission Matrix](./screenshots/permission-matrix.png)
+*Visual representation of role permissions across all roles*
+
+> **Note:** Screenshots will be added to the `screenshots/` directory. Update the paths above once images are available.
+
+## Project Structure
+
+```
+role-based-cms/
+├── backend/
+│   ├── src/
+│   │   ├── config/          # Database, JWT, Cloudinary configuration
+│   │   ├── controllers/     # Request handlers
+│   │   ├── middleware/      # Auth and permission middleware
+│   │   ├── models/          # Mongoose schemas
+│   │   ├── routes/          # API route definitions
+│   │   └── utils/           # Seed scripts and utilities
+│   ├── server.js            # Express app entry point
+│   └── package.json
+├── frontend/
+│   ├── src/
+│   │   ├── app/
+│   │   │   ├── components/  # Angular components
+│   │   │   ├── guards/       # Route guards
+│   │   │   ├── interceptors/ # HTTP interceptors
+│   │   │   ├── models/       # TypeScript interfaces
+│   │   │   └── services/     # API service classes
+│   │   ├── environments/     # Environment configurations
+│   │   └── styles.css       # Global styles
+│   └── package.json
+├── api.js                   # Vercel serverless entry point
+├── vercel.json              # Vercel deployment config
+└── README.md
+```
+
+## Deployment
+
+### Backend Deployment (Render)
+
+1. Connect your GitHub repository to Render
+2. Create a new Web Service
+3. Set build command: `cd backend && npm install`
+4. Set start command: `cd backend && npm start`
+5. Add environment variables in Render dashboard
+6. Deploy
+
+### Frontend Deployment (Vercel)
+
+1. Connect your GitHub repository to Vercel
+2. Set root directory to `frontend`
+3. Set build command: `npm run build`
+4. Set output directory: `dist/browser`
+5. Add environment variable `NG_APP_API_URL` with your Render backend URL (if needed)
+6. Deploy
+
+### Environment Variables for Production
+
+**Backend (Render):**
+- `MONGODB_URI`
+- `JWT_SECRET`
+- `JWT_EXPIRE`
+- `JWT_REFRESH_SECRET`
+- `JWT_REFRESH_EXPIRE`
+- `CLOUDINARY_CLOUD_NAME` (optional)
+- `CLOUDINARY_API_KEY` (optional)
+- `CLOUDINARY_API_SECRET` (optional)
+- `NODE_ENV=production`
+
+**Frontend (Vercel):**
+- `NG_APP_API_URL` (optional, defaults to Render URL)
+
+## Troubleshooting
+
+### Common Issues
+
+| Issue | Solution |
+|-------|----------|
+| **MongoDB connection fails** | Check `MONGODB_URI` and ensure MongoDB Atlas allows connections from your IP (or use `0.0.0.0/0` for all IPs) |
+| **CORS errors** | Verify CORS configuration in `backend/server.js` allows your frontend origin |
+| **JWT token expired** | Use the refresh token endpoint to get a new access token |
+| **Image upload fails** | Verify Cloudinary credentials are set correctly in `.env` |
+| **Roles not found** | Run `npm run seed` in the backend directory |
+| **SuperAdmin login fails** | Run `npm run seed-admin` to create the admin user |
+
+### Getting Help
+
+- Check backend logs in the terminal/console
+- Check browser console for frontend errors
+- Verify all environment variables are set correctly
+- Ensure MongoDB is running and accessible
+
+## License
+
+This project is private and for educational purposes.
+
+---
+
+**Built with ❤️ using Angular, Express, MongoDB, and Tailwind CSS**
