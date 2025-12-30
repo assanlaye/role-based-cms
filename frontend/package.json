@@ -6,7 +6,7 @@
     "start": "ng serve",
     "dev": "ng serve",
     "build": "ng build --configuration production",
-    "vercel-build": "yarn build",
+    "vercel-build": "yarn build && node verify-build.js",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
