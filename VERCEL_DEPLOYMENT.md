@@ -1,17 +1,17 @@
-# Netlify Deployment Guide
+# Vercel Deployment Guide
 
-This guide will help you deploy the Role-Based CMS to Netlify.
+This guide will help you deploy the Role-Based CMS to Vercel.
 
 ## Prerequisites
 
-1. **Netlify Account**: Sign up at [netlify.com](https://netlify.com)
+1. **Vercel Account**: Sign up at [vercel.com](https://vercel.com)
 2. **MongoDB Atlas**: Set up a MongoDB Atlas cluster (free tier available)
 3. **Cloudinary Account** (optional): For image uploads
 4. **GitHub Repository**: Push your code to GitHub
 
 ## Step 1: Environment Variables
 
-Before deploying, you need to set up the following environment variables in Netlify:
+Before deploying, you need to set up the following environment variables in Vercel:
 
 ### Required Variables
 
@@ -47,67 +47,64 @@ Before deploying, you need to set up the following environment variables in Netl
    - Your Cloudinary API secret
 
 9. **FRONTEND_URL**
-   - Your Netlify deployment URL (optional, auto-detected)
-   - Example: `https://your-app.netlify.app`
+   - Your Vercel deployment URL (optional, auto-configured)
+   - Example: `https://your-app.vercel.app`
 
-## Step 2: Deploy to Netlify
+## Step 2: Deploy to Vercel
 
-### Option A: Deploy via Netlify Dashboard (Recommended)
+### Option A: Deploy via Vercel Dashboard (Recommended)
 
-1. **Go to Netlify**
-   - Visit [app.netlify.com](https://app.netlify.com)
-   - Sign up/Login with GitHub
+1. **Go to Vercel**
+   - Visit [vercel.com/dashboard](https://vercel.com/dashboard)
+   - Click "Add New Project"
+   - Import your GitHub repository
 
-2. **Import Your Project**
-   - Click "Add new site" → "Import an existing project"
-   - Select your GitHub repository: `assanlaye/role-based-cms`
-   - Click "Import"
+2. **Configure Project**
+   - Vercel will automatically detect the `vercel.json` configuration
+   - **Root Directory**: Leave as `.` (root)
+   - **Framework Preset**: Other (or leave default)
+   - Click "Deploy"
 
-3. **Configure Build Settings**
-   - **Build command**: `cd frontend && yarn build` (or leave empty, netlify.toml handles it)
-   - **Publish directory**: `frontend/dist/frontend` (or leave empty, netlify.toml handles it)
-   - Click "Deploy site"
-
-4. **Add Environment Variables**
-   - Go to Site settings → Environment variables
+3. **Add Environment Variables**
+   - After first deployment, go to Project Settings → Environment Variables
    - Add all the required variables listed above
-   - Click "Save"
+   - Make sure to select "Production" environment
 
-5. **Redeploy**
-   - Go to Deploys tab
-   - Click "Trigger deploy" → "Clear cache and deploy site"
-   - ✅ Your app will be live at: `https://your-app.netlify.app`
+4. **Redeploy**
+   - Go to Deployments tab
+   - Click the three dots (⋯) on the latest deployment
+   - Click "Redeploy"
+   - ✅ Your app will be live at: `https://your-project-name.vercel.app`
 
-### Option B: Deploy via Netlify CLI
+### Option B: Deploy via Vercel CLI
 
-1. **Install Netlify CLI**
+1. **Install Vercel CLI**
    ```bash
-   npm install -g netlify-cli
+   npm i -g vercel
    ```
 
 2. **Login**
    ```bash
-   netlify login
+   vercel login
    ```
 
-3. **Initialize Site**
+3. **Deploy**
    ```bash
-   netlify init
+   vercel
    ```
-   - Follow prompts to link your site
 
 4. **Set Environment Variables**
    ```bash
-   netlify env:set MONGODB_URI "your-mongodb-uri"
-   netlify env:set JWT_SECRET "your-jwt-secret"
-   netlify env:set JWT_EXPIRE "1h"
-   netlify env:set JWT_REFRESH_SECRET "your-refresh-secret"
-   netlify env:set JWT_REFRESH_EXPIRE "7d"
+   vercel env add MONGODB_URI
+   vercel env add JWT_SECRET
+   vercel env add JWT_EXPIRE
+   vercel env add JWT_REFRESH_SECRET
+   vercel env add JWT_REFRESH_EXPIRE
    ```
 
-5. **Deploy**
+5. **Deploy to Production**
    ```bash
-   netlify deploy --prod
+   vercel --prod
    ```
 
 ## Step 3: Post-Deployment Setup
@@ -145,9 +142,9 @@ Run locally (pointing to production MongoDB):
 
 ## Step 4: Verify Deployment
 
-1. Visit your Netlify deployment URL
-2. Test the API: `https://your-app.netlify.app/api` (should show API info)
-3. Test the frontend: `https://your-app.netlify.app`
+1. Visit your Vercel deployment URL
+2. Test the API: `https://your-app.vercel.app/api` (should show API info)
+3. Test the frontend: `https://your-app.vercel.app`
 4. Login with the SuperAdmin credentials
 
 ## Project Structure
@@ -155,26 +152,26 @@ Run locally (pointing to production MongoDB):
 The project is configured as a monorepo with:
 
 - **Frontend**: Angular application (builds to `frontend/dist/frontend`)
-- **Backend**: Express API (runs as Netlify Functions)
+- **Backend**: Express API (runs as serverless functions)
 
 ### Routing
 
-- `/api/*` → Netlify Functions (backend)
-- `/*` → Frontend Angular application (with SPA redirect)
+- `/api/*` → Backend API routes
+- `/*` → Frontend Angular application
 
 ## Troubleshooting
 
 ### Build Fails
 
-1. Check build logs in Netlify dashboard
+1. Check build logs in Vercel dashboard
 2. Ensure all dependencies are in `package.json`
-3. Verify Node.js version (Netlify uses Node 18 by default)
+3. Verify Node.js version (Vercel uses Node 18+ by default)
 
 ### API Not Working
 
 1. Verify environment variables are set correctly
 2. Check MongoDB connection string
-3. Review function logs in Netlify dashboard
+3. Review function logs in Vercel dashboard
 
 ### CORS Errors
 
@@ -183,15 +180,15 @@ The project is configured as a monorepo with:
 
 ### Database Connection Issues
 
-1. Ensure MongoDB Atlas allows connections from anywhere (0.0.0.0/0) or add Netlify IPs
+1. Ensure MongoDB Atlas allows connections from anywhere (0.0.0.0/0) or add Vercel IPs
 2. Verify connection string format
 3. Check database user permissions
 
-### 404 Errors on Routes
+### 404 Errors
 
-1. Ensure `netlify.toml` has the SPA redirect rule
+1. Ensure `vercel.json` is in the root directory
 2. Check that Angular build completed successfully
-3. Verify publish directory is correct
+3. Verify routing configuration in `vercel.json`
 
 ## Environment Variables Reference
 
@@ -205,21 +202,21 @@ The project is configured as a monorepo with:
 | CLOUDINARY_CLOUD_NAME | No | Cloudinary cloud name | `your-cloud` |
 | CLOUDINARY_API_KEY | No | Cloudinary API key | `123456789` |
 | CLOUDINARY_API_SECRET | No | Cloudinary API secret | `secret-key` |
-| FRONTEND_URL | No | Frontend URL for CORS | `https://app.netlify.app` |
+| FRONTEND_URL | No | Frontend URL for CORS | `https://app.vercel.app` |
 
 ## Additional Notes
 
-- The backend runs as Netlify Functions, so cold starts may occur
+- The backend runs as serverless functions, so cold starts may occur
 - MongoDB connections are reused when possible
-- Static files are served from Netlify's CDN
+- Static files are served from Vercel's CDN
 - All API routes are prefixed with `/api`
-- Angular routing is handled by the SPA redirect in `netlify.toml`
+- Angular routing is handled by the catch-all route in `vercel.json`
 
 ## Support
 
 For issues or questions:
-1. Check Netlify deployment logs
-2. Review function logs
+1. Check Vercel deployment logs
+2. Review backend function logs
 3. Verify environment variables
 4. Test API endpoints directly
 

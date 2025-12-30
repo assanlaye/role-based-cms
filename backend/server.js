@@ -21,10 +21,9 @@ app.use(cors({
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     
-    // Allow requests from Netlify deployments and localhost
+    // Allow requests from Vercel deployments and localhost
     const allowedOrigins = [
-      /^https:\/\/.*\.netlify\.app$/,
-      /^https:\/\/.*\.netlify\.dev$/,
+      /^https:\/\/.*\.vercel\.app$/,
       /^http:\/\/localhost:\d+$/,
       process.env.FRONTEND_URL
     ].filter(Boolean);
@@ -65,5 +64,5 @@ app.get('/', (req, res) => {
   });
 });
 
-// Export for Netlify Functions (wrapped in netlify/functions/server.js)
+// Export for Vercel serverless functions
 module.exports = app;
