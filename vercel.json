@@ -13,14 +13,14 @@
       }
     }
   ],
-  "outputDirectory": "frontend/dist/frontend",
   "routes": [
     {
       "src": "/api/(.*)",
       "dest": "/backend/server.js"
     },
     {
-      "handle": "filesystem"
+      "src": "/(.*\\.(js|css|ico|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot|json|webp|map))",
+      "dest": "/$1"
     },
     {
       "src": "/(.*)",
