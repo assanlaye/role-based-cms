@@ -21,9 +21,8 @@ app.use(cors({
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     
-    // Allow requests from Vercel deployments and localhost
+    // Allow requests from localhost and configured frontend URL
     const allowedOrigins = [
-      /^https:\/\/.*\.vercel\.app$/,
       /^http:\/\/localhost:\d+$/,
       process.env.FRONTEND_URL
     ].filter(Boolean);
@@ -64,5 +63,12 @@ app.get('/', (req, res) => {
   });
 });
 
-// Export for Vercel serverless functions
+// Start server (if not in serverless environment)
+const PORT = process.env.PORT || 3000;
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
 module.exports = app;

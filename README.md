@@ -1,6 +1,6 @@
-3# Role-Based CMS
+# Role-Based CMS
 
-A minimal role-based Content Management System (CMS) with an Angular frontend and an Express + MongoDB backend. Includes role-based permissions (SuperAdmin, Manager, Contributor, Viewer), article management, authentication (JWT), and Cloudinary image uploads.
+A role-based Content Management System (CMS) with an Angular frontend and an Express + MongoDB backend. Includes role-based permissions (SuperAdmin, Manager, Contributor, Viewer), article management, authentication (JWT), and Cloudinary image uploads.
 
 **Prerequisites**
 - Node.js (v18+ recommended)
@@ -70,17 +70,6 @@ Other roles are created by `npm run seed` (SuperAdmin, Manager, Contributor, Vie
 
 (Refer to `backend/src/routes/` for exact routes and request shapes.)
 
-**Deployment (recommended — local or external host)**
-This repository is split into `frontend/` (Angular) and `backend/` (Express). You can host each separately — for example, serve the frontend as a static site and run the backend on any Node host (Heroku, Render, DigitalOcean, etc.).
-
-Quick production build & deploy notes:
-- Frontend: build with `npm run build` in `frontend/` and deploy the output directory from `dist/` (or your configured Angular build output).
-- Backend: deploy the `backend/` folder to any Node environment; ensure the environment variables described above are set and the process runs `npm start`.
-
-Important:
-- Ensure CORS and API base URLs are configured so the frontend can reach the backend.
-- If you prefer a single-host monorepo deployment, adapt the host's configuration to serve the frontend static files and forward `/api` to the backend.
-
 **Testing & Troubleshooting**
 - After starting backend and frontend locally, register or log in with `admin@cms.com` / `admin123` to access admin features.
 - Use the `seed` scripts if roles or SuperAdmin are missing.
@@ -97,26 +86,6 @@ Important:
   - Components: `frontend/src/app/components/`
   - Services: `frontend/src/app/services/`
   - Global styles: `frontend/src/styles.css`
-
-**Deployment on Vercel**
-
-This project is configured for easy deployment on Vercel with the included `vercel.json` file.
-
-📖 **For detailed deployment instructions, see [VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md)**
-
-**Quick Start**:
-1. Connect your GitHub repository to Vercel
-2. Set environment variables (see VERCEL_DEPLOYMENT.md for full list)
-3. Deploy - Vercel will automatically detect the `vercel.json` configuration
-4. Seed the database with roles and SuperAdmin user
-
-**Vercel Configuration Details**:
-- Frontend builds to `dist/frontend` (Angular production build)
-- Backend runs as serverless functions (@vercel/node)
-- API routes (`/api/*`) are automatically routed to backend
-- Frontend routes (`/*`) serve the Angular application
-- CORS is configured for Vercel domains and localhost
-- MongoDB connections are optimized for serverless environments
 
 If you want, I can:
 - Re-enable or implement the soft-delete / Trash flow for articles (backend + frontend).

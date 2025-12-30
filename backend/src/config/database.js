@@ -22,7 +22,7 @@ const connectDB = async () => {
     return conn;
   } catch (error) {
     console.error(`Error: ${error.message}`);
-    // In serverless, don't exit process - let Vercel handle it
+    // In production/serverless environments, don't exit process
     if (process.env.NODE_ENV !== 'production') {
       process.exit(1);
     }
