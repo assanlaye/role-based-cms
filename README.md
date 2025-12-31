@@ -1,4 +1,4 @@
-# Role-Based CMS
+<img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/8325fc0a-2fba-4dc0-82ad-930a054156c8" /><img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/29b15975-a818-4fed-82f5-16c854721e11" /><img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/48415206-0b1c-4b20-b847-fc34b23eacf8" /><img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/3e1f3200-4162-41b0-a73c-748469208913" /># Role-Based CMS
 
 A full-stack Content Management System (CMS) with role-based access control, built with Angular frontend and Express + MongoDB backend. Features include user authentication (JWT), article management, role-based permissions, and Cloudinary image uploads.
 
@@ -242,47 +242,40 @@ The system includes four predefined roles with the following permissions:
 ### Authentication Pages
 
 #### Login Page
-![Login Page](./screenshots/login-page.png)
+![image alt](https://github.com/assanlaye/role-based-cms/blob/main/screenshots/Login%20Page.jpg?raw=true)
 *User login interface with email and password fields*
 
 #### Registration Page
-![Registration Page](./screenshots/registration-page.png)
+![image alt](https://github.com/assanlaye/role-based-cms/blob/main/screenshots/signup%20page.jpg?raw=true)
 *New user registration form with profile photo upload*
 
 ### Dashboard
 
 #### Main Dashboard
-![Dashboard](./screenshots/dashboard.png)
+![image alt](https://github.com/assanlaye/role-based-cms/blob/main/screenshots/Dashboard%20page.jpg?raw=true)
 *Overview dashboard showing system statistics and recent activity*
 
 ### Article Management
 
 #### Article List
-![Article List](./screenshots/article-list.png)
+ ![image alt](https://github.com/assanlaye/role-based-cms/blob/main/screenshots/article-listing1.jpg?raw=true)
 *List view of all articles with filter and search functionality*
 
-#### Create/Edit Article
-![Article Form](./screenshots/article-form.png)
-*Form for creating or editing articles with rich text editor and image upload*
 
 ### User Management
+![image alt](https://github.com/assanlaye/role-based-cms/blob/main/screenshots/Manage%20roles.jpg?raw=true)
 
 #### Users Management Page
-![User Management](./screenshots/user-management.png)
+![image alt](https://github.com/assanlaye/role-based-cms/blob/main/screenshots/manager%20role%202.jpg?raw=true)
 *User management interface for viewing and managing all system users*
 
-#### Role Assignment
-![Role Assignment](./screenshots/role-assignment.png)
+#### Role Assignment and Management
+![image alt](https://github.com/assanlaye/role-based-cms/blob/main/screenshots/manager%20user.jpg?raw=true)
 *Interface for assigning roles to users*
 
-### Role Management
-
-#### Roles Management Page
-![Role Management](./screenshots/role-management.png)
-*Role management interface showing all roles and their permissions*
-
 #### Permission Matrix
-![Permission Matrix](./screenshots/permission-matrix.png)
+![image alt](https://github.com/assanlaye/role-based-cms/blob/main/screenshots/Manage%20roles.jpg?raw=true)
+![image alt](https://github.com/assanlaye/role-based-cms/blob/main/screenshots/manager%20role%202.jpg?raw=true)
 *Visual representation of role permissions across all roles*
 
 > **Note:** Screenshots will be added to the `screenshots/` directory. Update the paths above once images are available.
@@ -379,4 +372,4 @@ This project is private and for educational purposes.
 
 ---
 
-**Built with ❤️ using Angular, Express, MongoDB, and Tailwind CSS**
+**By Alassan Saine**
