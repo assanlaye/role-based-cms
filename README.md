@@ -1,4 +1,4 @@
-<img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/8325fc0a-2fba-4dc0-82ad-930a054156c8" /><img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/29b15975-a818-4fed-82f5-16c854721e11" /><img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/48415206-0b1c-4b20-b847-fc34b23eacf8" /><img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/3e1f3200-4162-41b0-a73c-748469208913" /># Role-Based CMS
+## Role-Based CMS
 
 A full-stack Content Management System (CMS) with role-based access control, built with Angular frontend and Express + MongoDB backend. Features include user authentication (JWT), article management, role-based permissions, and Cloudinary image uploads.
 
@@ -259,6 +259,8 @@ The system includes four predefined roles with the following permissions:
 
 #### Article List
  ![image alt](https://github.com/assanlaye/role-based-cms/blob/main/screenshots/article-listing1.jpg?raw=true)
+ ![image alt](https://github.com/assanlaye/role-based-cms/blob/main/screenshots/Articles-listing%20main%202.jpg?raw=true)
+ ![image alt](https://github.com/assanlaye/role-based-cms/blob/main/screenshots/Articlespage%20for%20viewers.jpg?raw=true)
 *List view of all articles with filter and search functionality*
 
 
